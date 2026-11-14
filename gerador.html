@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gold iPhones — Gerador de Venda</title>
+<style>
+  :root{
+    --bg:#080c17; --panel:#111a2e; --panel2:#18233c; --line:#26314c;
+    --gold:#e8b84a; --gold2:#ffd977; --txt:#eef2fa; --mut:#8792ab;
+    --green:#27c08a; --red:#ff5d6c; --blue:#3b7bff;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:radial-gradient(135% 80% at 50% 0%,#0e1830,var(--bg));min-height:100vh;color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.45}
+  .wrap{max-width:620px;margin:0 auto;padding:16px 16px 60px}
+  header{display:flex;align-items:center;gap:12px;padding:10px 0 18px}
+  .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--gold),#8a6d1d);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 2px 14px rgba(212,175,55,.35)}
+  h1{font-size:19px;margin:0;font-weight:700;letter-spacing:.2px}
+  h1 span{color:var(--blue)}
+  .sub{color:var(--mut);font-size:12.5px;margin-top:1px}
+  .tabs{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px;margin-bottom:16px}
+  .tab{flex:1;text-align:center;padding:10px;border-radius:10px;font-weight:600;font-size:13.5px;color:var(--mut);cursor:pointer;transition:.15s}
+  .tab.on{background:linear-gradient(135deg,var(--gold),#a9872a);color:#1a1405;box-shadow:0 2px 10px rgba(212,175,55,.3)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+  .card h2{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin:0 0 12px}
+  label{display:block;font-size:12.5px;color:var(--mut);margin:0 0 5px;font-weight:600}
+  input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:12px;font-size:15px;font-family:inherit;outline:none}
+  input:focus,textarea:focus{border-color:var(--gold)}
+  .row{display:flex;gap:10px}
+  .row>div{flex:1}
+  .mb{margin-bottom:12px}
+  .seg{display:flex;gap:6px;margin-bottom:14px}
+  .seg button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--mut);font-weight:600;font-size:13.5px;cursor:pointer}
+  .seg button.on{border-color:var(--gold);background:rgba(212,175,55,.12);color:var(--gold2)}
+  .mic{display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 0 4px}
+  .micbtn{width:92px;height:92px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--gold),#8a6d1d);color:#1a1405;font-size:38px;cursor:pointer;box-shadow:0 4px 24px rgba(212,175,55,.4);transition:.15s;display:flex;align-items:center;justify-content:center}
+  .micbtn:active{transform:scale(.95)}
+  .micbtn.rec{background:linear-gradient(135deg,var(--red),#a01722);animation:pulse 1.3s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,93,108,.55)}70%{box-shadow:0 0 0 22px rgba(255,93,108,0)}100%{box-shadow:0 0 0 0 rgba(255,93,108,0)}}
+  .mic .hint{color:var(--mut);font-size:13px;text-align:center}
+  .transcript{background:var(--panel2);border:1px dashed var(--line);border-radius:10px;padding:11px;font-size:14px;min-height:46px;color:var(--txt)}
+  .transcript.empty{color:var(--mut);font-style:italic}
+  .btn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-size:15.5px;font-weight:700;cursor:pointer;margin-top:4px}
+  .btn-gold{background:linear-gradient(135deg,var(--gold),#a9872a);color:#1a1405}
+  .btn-ghost{background:var(--panel2);border:1px solid var(--line);color:var(--txt);font-weight:600}
+  .out{background:#0f1a14;border:1px solid #1e3a2c;border-radius:14px;overflow:hidden;margin-top:14px;display:none}
+  .out.show{display:block}
+  .out pre{margin:0;padding:15px;white-space:pre-wrap;word-wrap:break-word;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:14.5px;line-height:1.5}
+  .out .bar{display:flex;gap:8px;padding:10px;background:#0b140f;border-top:1px solid #1e3a2c}
+  .out .bar button{flex:1;padding:12px;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer}
+  .copy{background:var(--green);color:#042016}
+  .wa{background:#25d366;color:#04210f}
+  .calc{display:flex;justify-content:space-between;align-items:center;background:var(--panel2);border-radius:10px;padding:12px 14px;margin-top:10px}
+  .calc .lbl{color:var(--mut);font-size:13px}
+  .calc .val{font-size:22px;font-weight:800;color:var(--gold2)}
+  .calc.diff .val{color:var(--green)}
+  .small{font-size:12px;color:var(--mut);margin-top:6px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+  th{color:var(--gold);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  td input{padding:7px 8px;font-size:13.5px}
+  .tnum{width:104px}
+  .trash{background:none;border:none;color:var(--red);font-size:17px;cursor:pointer;padding:0 4px}
+  .sellbox{background:linear-gradient(135deg,rgba(74,163,255,.12),rgba(74,163,255,.02));border:1px solid rgba(74,163,255,.3);border-radius:12px;padding:12px 14px;margin-top:8px;font-size:13.5px}
+  .drop{position:absolute;left:0;right:0;top:100%;z-index:30;background:var(--panel2);border:1px solid var(--gold);border-radius:10px;margin-top:4px;max-height:280px;overflow-y:auto;display:none;box-shadow:0 12px 34px rgba(0,0,0,.5)}
+  .drop.show{display:block}
+  .drop .opt{padding:12px 13px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;justify-content:space-between;gap:10px;font-size:14.5px;align-items:center}
+  .drop .opt:last-child{border-bottom:none}
+  .drop .opt:active{background:rgba(245,197,24,.18)}
+  .drop .opt b{color:var(--gold2)}
+  .drop .opt .pr{color:#9cc9ff;font-weight:700;white-space:nowrap}
+  .drop .none{padding:13px;color:var(--mut);font-size:13px}
+  .chk{display:flex;align-items:center;gap:9px;margin-top:12px;cursor:pointer;color:var(--txt);font-weight:600;font-size:14px}
+  .chk input{width:20px;height:20px;accent-color:var(--gold);flex:0 0 auto}
+  .chiprow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+  .chip{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:9px 13px;font-size:14px;font-weight:700;cursor:pointer}
+  .chip:active{background:rgba(245,197,24,.2);border-color:var(--gold)}
+  .chip.on{background:var(--gold);color:#1a1405;border-color:var(--gold)}
+  .selopts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .selopts button{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:7px 10px;font-size:12.5px;cursor:pointer}
+  .muted{color:var(--mut)}
+  .foot{text-align:center;color:var(--mut);font-size:11px;margin-top:24px}
+</style>
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gold">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#080c17">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">🐝</div>
+    <div>
+      <h1>GOLD <span>iPHONES</span></h1>
+      <div class="sub">Gerador de mensagem de venda</div>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab on" data-tab="venda" onclick="switchTab('venda')">Venda</div>
+    <div class="tab" data-tab="sell" onclick="switchTab('sell')">Preços</div>
+    <div class="tab" data-tab="aval" onclick="switchTab('aval')">Avaliação</div>
+  </div>
+
+  <!-- ====== VENDA ====== -->
+  <div id="tab-venda">
+
+    <div class="seg">
+      <button id="mo-audio" class="on" onclick="setMode('audio')">🎙️ Por áudio</button>
+      <button id="mo-manual" onclick="setMode('manual')">⌨️ Manual</button>
+    </div>
+
+    <div class="card" id="box-audio">
+      <h2>Fala a negociação</h2>
+      <div class="mic">
+        <button class="micbtn" id="micbtn" onclick="toggleRec()">🎙️</button>
+        <div class="hint" id="michint">Toque e fale. Ex: "cliente quer levar o 14 Pro Max 256, deu um 13 na troca"</div>
+      </div>
+      <div class="transcript empty" id="transcript" contenteditable="true" style="margin-top:12px">A transcrição aparece aqui…</div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-ghost" style="flex:1;margin-top:0" onclick="parseAudio()">Preencher ⤵</button>
+        <button class="btn btn-ghost" style="flex:0 0 42%;margin-top:0" onclick="clearAudio()">🗑️ Limpar</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Aparelho(s) que o cliente leva <span class="muted" style="text-transform:none;font-weight:400">(pode ser mais de um)</span></h2>
+      <div class="small" style="margin-bottom:6px">⚡ Orçar a linha inteira (normal · Pro · Pro Max) — abate a troca em cada:</div>
+      <div class="chiprow" id="lineBudget"></div>
+      <div class="chiprow" id="buyChips"></div>
+      <div id="buyRows"></div>
+      <button class="btn btn-ghost" onclick="addBuy()">+ Adicionar outro aparelho</button>
+      <div class="small">Pesquisa o modelo e toca pra puxar o preço. O preço é editável.</div>
+    </div>
+
+    <div class="card">
+      <h2>Aparelho(s) na troca <span class="muted" style="text-transform:none;font-weight:400">(pode ser mais de um)</span></h2>
+      <div class="chiprow" id="tradeChips"></div>
+      <div id="tradeRows"></div>
+      <button class="btn btn-ghost" onclick="addTrade()">+ Adicionar outro aparelho</button>
+      <div class="small">O valor você digita ou fala — não aparece pro cliente, só a diferença final.</div>
+    </div>
+
+    <div class="card">
+      <h2>Fechamento</h2>
+      <div class="calc"><span class="lbl">Preço de venda</span><span class="val" id="sumNew">R$ 0,00</span></div>
+      <div class="calc" id="rowTrade" style="display:none;margin-top:8px"><span class="lbl">− Troca</span><span class="val" style="color:var(--red)" id="sumTrade">R$ 0,00</span></div>
+      <div class="calc diff" style="margin-top:8px"><span class="lbl" id="diffLbl">Total a pagar</span><span class="val" id="sumDiff">R$ 0,00</span></div>
+      <div class="mb" style="margin-top:14px">
+        <label>Formas de pagamento</label>
+        <input id="payText" value="Pix, cartão em até 18x ou dinheiro">
+      </div>
+      <div>
+        <label>Nome do cliente (opcional)</label>
+        <input id="custName" placeholder="—">
+      </div>
+      <div style="margin:4px 0 10px">
+        <div class="small" style="margin-bottom:6px">Os 2 aparelhos são:</div>
+        <div style="display:flex;gap:8px">
+          <button type="button" id="segPedido" onclick="setCmp(false)" style="flex:1;padding:12px;border-radius:12px;border:1px solid #2a3550;background:#f5c518;color:#111;font-weight:700;cursor:pointer">🧾 Pedido único</button>
+          <button type="button" id="segCmp" onclick="setCmp(true)" style="flex:1;padding:12px;border-radius:12px;border:1px solid #2a3550;background:transparent;color:#cbd5e1;font-weight:700;cursor:pointer">⚖️ Comparar 2</button>
+        </div>
+      </div>
+      <label class="chk"><input type="checkbox" id="incParc" checked> Incluir simulação do cartão (parcelamento)</label>
+      <label class="chk"><input type="checkbox" id="incAcp" checked> Incluir o que ACOMPANHA (o que vem)</label>
+      <div class="mb" style="margin-top:6px">
+        <textarea id="acpText" rows="7" onchange="saveAcp()" style="resize:vertical"></textarea>
+      </div>
+      <label class="chk"><input type="checkbox" id="incNao"> Incluir o que NÃO vem</label>
+      <div class="mb" style="margin-top:6px">
+        <textarea id="naoText" rows="3" onchange="saveNao()" style="resize:vertical"></textarea>
+      </div>
+    </div>
+
+    <button class="btn btn-gold" id="genBtn" onclick="generate()">✨ Gerar mensagem</button>
+
+    <div class="out" id="out">
+      <pre id="outText"></pre>
+      <div class="bar">
+        <button class="copy" onclick="copyMsg()">📋 Copiar texto</button>
+        <button class="wa" onclick="sendWA()">💬 WhatsApp</button>
+      </div>
+      <div id="artWrap" style="display:none;margin-top:14px">
+        <div class="small" style="margin-bottom:8px">🖼️ Arte do parcelamento (anexa no Instagram/CRM):</div>
+        <img id="artImg" style="width:100%;border-radius:14px;display:block" alt="Simulação de parcelamento">
+        <div class="bar" style="margin-top:10px">
+          <button class="copy" onclick="copyArt(event)">📋 Copiar arte</button>
+          <button class="wa" onclick="downloadArt()" style="background:#2563eb">⬇️ Baixar arte</button>
+        </div>
+      </div>
+    </div>
+    <canvas id="artCanvas" style="display:none"></canvas>
+  </div>
+
+  <!-- ====== TABELA DE PREÇOS ====== -->
+  <div id="tab-sell" style="display:none">
+    <div class="card">
+      <h2>Tabela de preços de venda</h2>
+      <div class="small" style="margin-bottom:12px">Preço que o cliente paga pra <b>levar</b> o aparelho. Quando tu fala/escolhe o modelo, puxo daqui. Só o dono edita (PIN) e vale pra todos os vendedores.</div>
+      <table>
+        <thead><tr><th>Modelo</th><th>Arm.</th><th>Venda R$</th><th>Custo R$</th><th>Lacrado R$</th><th></th></tr></thead>
+        <tbody id="sellBody"></tbody>
+      </table>
+      <button class="btn btn-ghost" style="margin-top:10px" onclick="addRow()">+ Adicionar modelo</button>
+      <button class="btn btn-gold" style="margin-top:10px" onclick="saveSell()">💾 Salvar tabela</button>
+      <div class="small" id="savedSell" style="text-align:center;margin-top:8px"></div>
+    </div>
+  </div>
+
+  <!-- ====== AVALIAÇÃO ====== -->
+  <div id="tab-aval" style="display:none">
+    <div class="card">
+      <h2>Avaliação de troca (custo)</h2>
+      <div class="small" style="margin-bottom:12px">Quanto a loja paga no aparelho que entra na troca. Base: AB+ − R$300. Adiciona os que faltam (Pro Max etc). Só o dono edita (PIN) e vale pra todos.</div>
+      <table>
+        <thead><tr><th>Modelo</th><th>Arm.</th><th>Avaliação R$</th><th></th></tr></thead>
+        <tbody id="avalBody"></tbody>
+      </table>
+      <button class="btn btn-ghost" style="margin-top:10px" onclick="addRowAval()">+ Adicionar modelo</button>
+      <button class="btn btn-gold" style="margin-top:10px" onclick="saveAval()">💾 Salvar avaliação</button>
+      <div class="small" id="savedAval" style="text-align:center;margin-top:8px"></div>
+    </div>
+  </div>
+
+  <div class="foot">Gold iPhones · uso interno</div>
+</div>
+
+<script>
+/* ======== SUPABASE — preços em tempo real pra toda a equipe ======== */
+const SUPA_URL='https://vhlbiqqlogomwmaxyevi.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZobGJpcXFsb2dvbXdtYXh5ZXZpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk0NDQ3MzEsImV4cCI6MjEwNTAyMDczMX0.TA78okdZ3h2Tf9z6Ku3Crs0kprYSMiIYeR0VSYZ1gwQ';            /* anon public */
+const ADMIN_PIN='4559';                    /* só o dono edita preços */
+let adminUnlocked=false;
+const supaOn=()=>SUPA_KEY.indexOf('__')!==0;
+const supaHead=()=>({'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json'});
+async function supaGetAll(){
+  if(!supaOn())return null;
+  try{const r=await fetch(SUPA_URL+'/rest/v1/config_precos?select=chave,dados',{headers:supaHead()});if(!r.ok)return null;const rows=await r.json();const o={};rows.forEach(x=>o[x.chave]=x.dados);return o;}catch(e){return null;}
+}
+async function supaSet(chave,dados){
+  if(!supaOn())return false;
+  try{const r=await fetch(SUPA_URL+'/rest/v1/config_precos',{method:'POST',headers:{...supaHead(),'Prefer':'resolution=merge-duplicates,return=minimal'},body:JSON.stringify([{chave,dados,atualizado_em:new Date().toISOString()}])});return r.ok;}catch(e){return false;}
+}
+async function syncFromCloud(){
+  const d=await supaGetAll();if(!d)return;
+  if(Array.isArray(d.sell)&&d.sell.length){sell=d.sell;try{localStorage.setItem('gold_sell_v4',JSON.stringify(sell));}catch(e){}buildList();renderPicker('buy');renderLineBudget();}
+  if(Array.isArray(d.aval)&&d.aval.length){aval=d.aval;try{localStorage.setItem('gold_aval_v1',JSON.stringify(aval));}catch(e){}renderPicker('trade');}
+}
+
+/* ======== TABELA DE PREÇO DE VENDA (seminovos 03/11) ======== */
+const DEFAULT_SELL = [
+  ["iPhone 11 Pro Max","64",1890,1290,0],["iPhone 11 Pro Max","256",2090,1499,0],["iPhone 12","64",1520,899,0],["iPhone 12","128",1730,1070,0],["iPhone 12 Pro","128",2000,1250,0],["iPhone 12 Pro","256",2130,1550,0],["iPhone 12 Pro Max","128",2500,1690,0],["iPhone 12 Pro Max","256",2620,1849,0],["iPhone 13","128",2090,1300,0],["iPhone 13","256",2290,1580,0],["iPhone 13 Pro","128",2890,0,0],["iPhone 13 Pro","256",2890,2050,0],["iPhone 13 Pro","512",3090,2190,0],["iPhone 13 Pro","1TB",3690,2650,0],["iPhone 13 Pro Max","128",3190,2290,0],["iPhone 13 Pro Max","256",3390,2580,0],["iPhone 14","128",2450,1600,0],["iPhone 14","256",2690,1800,0],["iPhone 14 Plus","128",2590,1700,0],["iPhone 14 Plus","256",2880,1880,0],["iPhone 14 Pro","128",3250,2400,0],["iPhone 14 Pro","256",3490,2650,0],["iPhone 14 Pro","512",3790,2890,0],["iPhone 14 Pro Max","128",3790,2850,0],["iPhone 14 Pro Max","256",3690,2999,0],["iPhone 14 Pro Max","512",4050,3250,0],["iPhone 15","128",3090,2290,4650],["iPhone 15 Plus","128",3390,2500,0],["iPhone 15 Pro","128",3890,3050,0],["iPhone 15 Pro","256",4090,3199,0],["iPhone 15 Pro","512",4390,3390,0],["iPhone 15 Pro Max","256",4530,3650,0],["iPhone 15 Pro Max","512",4790,3890,0],["iPhone 15 Pro Max","1TB",4970,4190,0],["iPhone 16","128",4290,3290,5300],["iPhone 16","256",4590,3499,0],["iPhone 16e","128",2790,1890,0],["iPhone 16 Plus","128",4590,3550,0],["iPhone 16 Pro","128",4790,3849,0],["iPhone 16 Pro","256",4980,4190,0],["iPhone 16 Pro","512",5290,4400,0],["iPhone 16 Pro Max","256",5590,4600,0],["iPhone 16 Pro Max","512",5900,4990,0],["iPhone 17","256",5170,4250,6100],["iPhone 17 Air","256",5230,4150,0],["iPhone 17 Pro","256",6790,5699,7650],["iPhone 17 Pro Max","256",7290,6199,8000],["iPhone 17 Pro Max","512",8490,7390,9300],["iPhone 18 Pro Max","512",0,0,11400],["iPhone 18 Pro Max","256",0,0,9500],["iPhone 18 Pro","256",0,0,8500],["iPhone Duo","256",0,0,18600]
+];
+
+/* ======== TAXAS FIXAS (da maquininha) — não editáveis ======== */
+const PARC = [[1,6.4848],[2,7.2732],[3,8.073],[4,8.8613],[5,9.6611],[6,10.7051],[7,11.52],[8,12.3343],[9,13.1606],[10,13.9732],[11,14.8105],[12,16.7133],[13,17.5641],[14,18.4273],[15,19.289],[16,20.149],[17,21.0214],[18,21.9513]];
+/* 10 simulações que saem na mensagem */
+const PARC_SHOW = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+
+/* ======== AVALIAÇÃO DE TROCA (base Tabela Gold AB+ − R$300) — editável ======== */
+const DEFAULT_AVAL=[["iPhone 11 Pro Max","64",1250],["iPhone 12 Pro","128",1250],["iPhone 13","128",1350],["iPhone 13","256",1500],["iPhone 14","128",1550],["iPhone 14","256",1700],["iPhone 14 Plus","128",1700],["iPhone 14 Pro","128",2350],["iPhone 14 Pro","256",2500],["iPhone 14 Pro","512",2650],["iPhone 14 Pro Max","128",2750],["iPhone 14 Pro Max","256",2950],["iPhone 14 Pro Max","512",3050],["iPhone 15","128",2250],["iPhone 15 Plus","128",2400],["iPhone 15 Pro","128",2950],["iPhone 15 Pro Max","256",3650],["iPhone 16e","128",3000],["iPhone 16","128",3250],["iPhone 16 Plus","128",3350],["iPhone 16 Pro","128",3900],["iPhone 16 Pro Max","256",4650],["iPhone 17 Pro","256",5800]];
+let aval=loadAval();
+function loadAval(){try{const s=localStorage.getItem('gold_aval_v1');if(s)return JSON.parse(s);}catch(e){}return DEFAULT_AVAL.map(r=>({m:r[0],c:r[1],v:r[2]}));}
+function saveAval(){const rows=[...document.querySelectorAll('#avalBody tr')].map(tr=>({m:tr.querySelector('.am').value.trim(),c:tr.querySelector('.ac').value.trim(),v:parseNum(tr.querySelector('.av').value)})).filter(r=>r.m);aval=rows;try{localStorage.setItem('gold_aval_v1',JSON.stringify(rows));}catch(e){}const el=document.getElementById('savedAval');el.textContent='⏳ Enviando pra todos os vendedores...';supaSet('aval',rows).then(ok=>{el.textContent=ok?'✅ Salvo e enviado pra toda a equipe':'✅ Salvo neste aparelho (nuvem indisponível)';setTimeout(()=>el.textContent='',3500);});renderPicker('trade');}
+function renderAval(){const b=document.getElementById('avalBody');b.innerHTML='';aval.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td><input class="am" value="${r.m}"></td><td><input class="ac" value="${r.c}" style="width:52px"></td><td><input class="av" inputmode="decimal" value="${r.v}" style="width:96px"></td><td><button class="trash" onclick="this.closest('tr').remove()">✕</button></td>`;b.appendChild(tr);});}
+function addRowAval(){const b=document.getElementById('avalBody');const tr=document.createElement('tr');tr.innerHTML=`<td><input class="am" placeholder="iPhone 13 Pro Max"></td><td><input class="ac" placeholder="128" style="width:52px"></td><td><input class="av" inputmode="decimal" placeholder="0" style="width:96px"></td><td><button class="trash" onclick="this.closest('tr').remove()">✕</button></td>`;b.appendChild(tr);}
+
+let sell = loadSell();
+function loadSell(){try{const s=localStorage.getItem('gold_sell_v4');if(s)return JSON.parse(s);}catch(e){}return DEFAULT_SELL.map(r=>({m:r[0],c:r[1],v:r[2],vc:r[3]||0,vl:r[4]||0}));}
+function saveSell(){
+  const rows=[...document.querySelectorAll('#sellBody tr')].map(tr=>({m:tr.querySelector('.am').value.trim(),c:tr.querySelector('.ac').value.trim(),v:parseNum(tr.querySelector('.av').value),vc:parseNum(tr.querySelector('.avc').value),vl:parseNum(tr.querySelector('.avl').value)})).filter(r=>r.m);
+  sell=rows;
+  try{localStorage.setItem('gold_sell_v4',JSON.stringify(rows));}catch(e){}
+  const el=document.getElementById('savedSell');el.textContent='⏳ Enviando pra todos os vendedores...';
+  supaSet('sell',rows).then(ok=>{el.textContent=ok?'✅ Salvo e enviado pra toda a equipe':'✅ Salvo neste aparelho (nuvem indisponível)';setTimeout(()=>el.textContent='',3500);});
+  buildList();renderPicker('buy');
+}
+function renderSell(){
+  const b=document.getElementById('sellBody');b.innerHTML='';
+  sell.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td><input class="am" value="${r.m}"></td><td><input class="ac" value="${r.c}" style="width:42px"></td><td><input class="av" inputmode="decimal" value="${r.v||''}" placeholder="0" style="width:72px"></td><td><input class="avc" inputmode="decimal" value="${r.vc||''}" placeholder="0" style="width:72px"></td><td><input class="avl" inputmode="decimal" value="${r.vl||''}" placeholder="0" style="width:72px"></td><td><button class="trash" onclick="this.closest('tr').remove()">✕</button></td>`;b.appendChild(tr);});
+}
+function addRow(){const b=document.getElementById('sellBody');const tr=document.createElement('tr');tr.innerHTML=`<td><input class="am" placeholder="iPhone 14"></td><td><input class="ac" placeholder="128" style="width:42px"></td><td><input class="av" inputmode="decimal" placeholder="0" style="width:72px"></td><td><input class="avc" inputmode="decimal" placeholder="0" style="width:72px"></td><td><input class="avl" inputmode="decimal" placeholder="0" style="width:72px"></td><td><button class="trash" onclick="this.closest('tr').remove()">✕</button></td>`;b.appendChild(tr);}
+function buildList(){}
+
+/* ======== UTIL ======== */
+function parseNum(s){if(typeof s==='number')return s;if(!s)return 0;return parseFloat(String(s).replace(/[^\d,.-]/g,'').replace(/\.(?=\d{3})/g,'').replace(',','.'))||0;}
+function brl(n){return 'R$ '+(n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function norm(s){return (s||'').toLowerCase().replace(/iphone/g,'').replace(/gb/g,'').replace(/\s+/g,' ').trim();}
+function capFrom(q){const m=q.match(/\b(64|128|256|512|1024)\b/);return m?m[1]:null;}
+function matchRows(data,q){
+  const cap=capFrom(q);const scored=[];
+  data.forEach(r=>{let score=0;norm(r.m).split(' ').filter(Boolean).forEach(w=>{if(q.includes(w))score+=w.length;});const num=r.m.match(/\b(11|12|13|14|15|16|17)\b/);if(num&&!new RegExp('\\b'+num[1]+'\\b').test(q))score-=4;if(cap&&r.c===cap)score+=5;if(score>0)scored.push({r,score});});
+  scored.sort((a,b)=>b.score-a.score);return scored;
+}
+
+/* ======== LINHAS DE VENDA (vários aparelhos) ======== */
+let activeBuy=null;
+function buyRowHTML(){return `<div class="row brow" style="margin-bottom:8px;align-items:flex-start"><div style="flex:2;position:relative"><input class="bm" placeholder="🔎 Toque e escolha nos chips, ou digite" autocomplete="off" oninput="searchBuy(this)" onfocus="activeBuy=this.closest('.brow')"><div class="drop bdrop"></div></div><div style="flex:1"><input class="bv" inputmode="decimal" placeholder="Preço R$" oninput="recalc()" onfocus="activeBuy=this.closest('.brow')"></div><button class="trash" onclick="this.closest('.brow').remove();if(activeBuy===this.closest('.brow'))activeBuy=null;recalc()">✕</button></div>`;}
+function addBuy(){document.getElementById('buyRows').insertAdjacentHTML('beforeend',buyRowHTML());const rows=document.querySelectorAll('#buyRows .brow');activeBuy=rows[rows.length-1];SEL.buy={line:null,variant:null};renderPicker('buy');const chips=document.getElementById('buyChips');if(chips)chips.scrollIntoView({behavior:'smooth',block:'center'});}
+function buyModels(){return [...document.querySelectorAll('#buyRows .bm')].map(i=>i.value.trim()).filter(Boolean);}
+function buyRowsData(){return [...document.querySelectorAll('#buyRows .brow')].map(r=>({m:r.querySelector('.bm').value.trim(),v:parseNum(r.querySelector('.bv').value)})).filter(r=>r.m);}
+function renderLineBudget(){const box=document.getElementById('lineBudget');if(!box)return;const lines=[...new Set(sell.map(r=>parseModel(r.m).line))].filter(Boolean).sort((a,b)=>parseInt(a)-parseInt(b)||a.length-b.length);box.innerHTML=lines.map(l=>`<button class="chip" onclick="orcarLinha('${l}')">Linha ${l}</button>`).join('');}
+function orcarLinha(line){
+  const mr={'64':0,'128':1,'256':2,'512':3,'1024':4,'1TB':4};
+  const tiers=['','Pro','Pro Max'];const picked=[];
+  tiers.forEach(tv=>{const c=sell.filter(r=>{const p=parseModel(r.m);return p.line===line&&p.variant===tv&&r.v>0;}).sort((a,b)=>(mr[a.c]??9)-(mr[b.c]??9));if(c.length)picked.push({m:`${c[0].m} ${c[0].c}GB`,v:c[0].v});});
+  if(picked.length<2){alert('Linha '+line+': preciso de pelo menos 2 modelos com preço (normal/Pro/Pro Max).');return;}
+  const box=document.getElementById('buyRows');box.innerHTML='';
+  picked.slice(0,3).forEach(()=>box.insertAdjacentHTML('beforeend',buyRowHTML()));
+  const rows=document.querySelectorAll('#buyRows .brow');
+  picked.slice(0,3).forEach((p,i)=>{rows[i].querySelector('.bm').value=p.m;rows[i].querySelector('.bv').value=p.v;});
+  setCmp(true);activeBuy=null;recalc();generate();
+}
+function buyTotal(){let s=0;document.querySelectorAll('#buyRows .bv').forEach(i=>s+=parseNum(i.value));return s;}
+function searchBuy(inp){
+  const drop=inp.parentElement.querySelector('.bdrop');
+  const raw=inp.value.toLowerCase().replace(/iphone/g,'').trim();
+  if(!raw){drop.classList.remove('show');return;}
+  const terms=raw.split(/\s+/).filter(Boolean);
+  const res=sell.filter(r=>{const hay=(r.m+' '+r.c).toLowerCase();return terms.every(t=>hay.includes(t));}).slice(0,40);
+  if(!res.length){drop.innerHTML='<div class="none">Nenhum modelo. Confere a aba Tabela de Preços.</div>';drop.classList.add('show');return;}
+  let html='';
+  res.forEach(r=>{
+    html+=`<div class="opt" onclick="selBuy(this,'${(r.m+' '+r.c+'GB').replace(/'/g,'')}',${r.v})"><span><b>${r.m}</b> ${r.c}GB</span><span class="pr">${r.v>0?brl(r.v):'—'}</span></div>`;
+    if(r.vl>0)html+=`<div class="opt" onclick="selBuy(this,'${(r.m+' '+r.c+'GB (Lacrado)').replace(/'/g,'')}',${r.vl})"><span><b>${r.m}</b> ${r.c}GB · <span style="color:var(--gold2)">Lacrado</span></span><span class="pr">${brl(r.vl)}</span></div>`;
+  });
+  drop.innerHTML=html;drop.classList.add('show');
+}
+function selBuy(el,label,val){const row=el.closest('.brow');row.querySelector('.bm').value=label;row.querySelector('.bv').value=val>0?val:'';el.closest('.bdrop').classList.remove('show');recalc();}
+function pickBestSell(text,lac){
+  const hits=matchRows(sell,norm(text));const row=document.querySelector('#buyRows .brow');
+  if(hits.length&&row){
+    const r=hits[0].r;
+    if(lac&&r.vl>0){row.querySelector('.bm').value=`${r.m} ${r.c}GB (Lacrado)`;row.querySelector('.bv').value=r.vl;}
+    else{row.querySelector('.bm').value=`${r.m} ${r.c}GB`;row.querySelector('.bv').value=r.v>0?r.v:'';}
+    recalc();return true;
+  }
+  return false;
+}
+document.addEventListener('click',e=>{
+  if(!e.target.classList.contains('bm')&&!e.target.closest('.bdrop')){document.querySelectorAll('.bdrop.show').forEach(d=>d.classList.remove('show'));}
+  if(!e.target.classList.contains('trm')&&!e.target.closest('.trdrop')){document.querySelectorAll('.trdrop.show').forEach(d=>d.classList.remove('show'));}
+});
+
+/* ======== CÁLCULO ======== */
+function tradeTotal(){let tv=0;document.querySelectorAll('#tradeRows .trv').forEach(i=>tv+=parseNum(i.value));return tv;}
+function tradeModels(){return [...document.querySelectorAll('#tradeRows .trm')].map(i=>i.value.trim()).filter(Boolean);}
+function tradeRowHTML(){return `<div class="row trow" style="margin-bottom:8px;align-items:flex-start"><div style="flex:2;position:relative"><input class="trm" placeholder="Pesquisar modelo do usado" autocomplete="off" oninput="searchTrade(this)"><div class="drop trdrop"></div></div><div style="flex:1"><input class="trv" inputmode="decimal" placeholder="Avaliação R$" oninput="recalc()"></div><button class="trash" onclick="this.closest('.trow').remove();recalc()">✕</button></div>`;}
+function searchTrade(inp){
+  const drop=inp.parentElement.querySelector('.trdrop');
+  const raw=inp.value.toLowerCase().replace(/iphone/g,'').trim();
+  if(!raw){drop.classList.remove('show');return;}
+  const terms=raw.split(/\s+/).filter(Boolean);
+  const res=aval.filter(r=>{const hay=(r.m+' '+r.c).toLowerCase();return terms.every(t=>hay.includes(t));}).slice(0,50);
+  if(!res.length){drop.innerHTML='<div class="none">Sem base — digita o valor na mão.</div>';drop.classList.add('show');return;}
+  drop.innerHTML=res.map(r=>`<div class="opt" onclick="selTrade(this,'${(r.m+' '+r.c+'GB').replace(/'/g,'')}',${r.v})"><span><b>${r.m}</b> ${r.c}GB</span><span class="pr">${brl(r.v)}</span></div>`).join('');
+  drop.classList.add('show');
+}
+function selTrade(el,label,val){const row=el.closest('.trow');row.querySelector('.trm').value=label;row.querySelector('.trv').value=val>0?val:'';el.closest('.trdrop').classList.remove('show');recalc();}
+function avalLookup(text){const q=(text||'').toLowerCase().replace(/iphone/g,'').replace(/gb/g,'').trim();const terms=q.split(/\s+/).filter(Boolean);if(!terms.length)return 0;const hit=aval.find(r=>{const hay=(r.m+' '+r.c).toLowerCase();return terms.every(t=>hay.includes(t));});return hit?hit.v:0;}
+function addTrade(){document.getElementById('tradeRows').insertAdjacentHTML('beforeend',tradeRowHTML());}
+function recalc(){
+  const np=buyTotal();const tv=tradeTotal();const diff=np-tv;
+  document.getElementById('sumNew').textContent=brl(np);
+  const rowT=document.getElementById('rowTrade');const lbl=document.getElementById('diffLbl');
+  if(tv>0){rowT.style.display='flex';document.getElementById('sumTrade').textContent=brl(tv);lbl.textContent=diff>=0?'Diferença a pagar':'↩️ Devolvemos no Pix';}
+  else{rowT.style.display='none';lbl.textContent='Total a pagar';}
+  document.getElementById('sumDiff').textContent=brl(Math.abs(diff));
+}
+
+/* ======== PARCELAMENTO (10 simulações) ======== */
+function parcLines(valor){
+  if(!valor)return '';
+  let out='\n💳 *Parcelamento no cartão:*\n';
+  PARC.filter(r=>PARC_SHOW.includes(r[0])).forEach(r=>{const p=valor*(1+r[1]/100)/r[0];out+=`${r[0]}x de *${brl(p)}*\n`;});
+  return out;
+}
+
+/* ======== ARTE DO PARCELAMENTO (canvas em tempo real) ======== */
+let artBlob=null;
+function clearArt(){artBlob=null;const w=document.getElementById('artWrap');if(w)w.style.display='none';}
+function fitText(x,txt,max,base){let s=base;x.font=`700 ${s}px -apple-system,Segoe UI,Arial`;while(x.measureText(txt).width>max&&s>22){s-=2;x.font=`700 ${s}px -apple-system,Segoe UI,Arial`;}return s;}
+const BEN={comum:['Dia a dia','Apps e fotos','Custo-benefício'],pro:['Câmera pro','Potência','Tela 120Hz'],promax:['Maior tela','Mais bateria','Completo']};
+function tierKey(m){const s=(m||'').toLowerCase();if(/duo|ipad|macbook/.test(s))return 'promax';const p=parseModel(m||'');const v=(p.variant||'').toLowerCase();if(v.indexOf('pro max')>-1)return 'promax';if(v.indexOf('pro')>-1)return 'pro';return 'comum';}
+function drawPhone(x,px,py,w,tint){
+  const h=w*2.02;
+  x.save();
+  x.fillStyle='#1b2540';x.strokeStyle=tint;x.lineWidth=5;
+  roundRect(x,px,py,w,h,w*0.17);x.fill();x.stroke();
+  x.fillStyle='#05080f';roundRect(x,px+w*0.09,py+w*0.12,w*0.82,h-w*0.24,w*0.1);x.fill();
+  // câmera (original, genérica)
+  x.fillStyle='#11182b';roundRect(x,px+w*0.15,py+w*0.19,w*0.3,w*0.3,w*0.07);x.fill();
+  x.fillStyle=tint;
+  [[0.22,0.26],[0.37,0.26],[0.22,0.41]].forEach(p=>{x.beginPath();x.arc(px+w*p[0],py+w*p[1],w*0.045,0,7);x.fill();});
+  x.restore();
+  return h;
+}
+function buildSaleArt(o){
+  const {buyModels=[],trModels=[],payable=0,rawDiff=0,hasTrade=false,incParc=true,np=0}=o||{};
+  const parcRows=(incParc&&payable>0)?PARC.filter(r=>PARC_SHOW.includes(r[0])).map(r=>({n:r[0],p:payable*(1+r[1]/100)/r[0]})):[];
+  const perCol=parcRows.length?Math.ceil(parcRows.length/2):0;
+  const W=1080;
+  const headerH=200, tradeH=hasTrade?620:0, valueH=190, parcH=parcRows.length?(perCol*120+96):0, footerH=130;
+  const H=headerH+tradeH+valueH+parcH+footerH+40+(acpChecked()?110:0);
+  const cv=document.getElementById('artCanvas');cv.width=W;cv.height=H;
+  const x=cv.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#131d36');g.addColorStop(1,'#060a14');x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.textAlign='center';
+  x.fillStyle='#f5c518';x.font='800 72px -apple-system,Segoe UI,Arial';x.fillText('GOLD iPHONES',W/2,118);
+  const saleCust=custNameVal();drawSub(x,W,168,saleCust?`${saleCust}, segue seu orçamento`:'ORÇAMENTO');
+  drawSeals(x,W);
+  let y=headerH;
+  // bloco troca (dois aparelhos)
+  if(hasTrade){
+    const pw=190, colC=[W*0.27, W*0.73], py=y+30;
+    // seta
+    drawPhone(x,colC[0]-pw/2,py,pw,'#8fa0bd');
+    drawPhone(x,colC[1]-pw/2,py,pw,'#f5c518');
+    x.fillStyle='#f5c518';x.font='800 70px -apple-system,Segoe UI,Arial';x.textAlign='center';x.fillText('→',W/2,py+pw*1.1);
+    const labY=py+pw*2.02+54;
+    x.fillStyle='#8fa0bd';x.font='700 28px -apple-system,Segoe UI,Arial';x.fillText('ENTRA NA TROCA',colC[0],labY);
+    x.fillStyle='#f5c518';x.fillText('VOCÊ LEVA',colC[1],labY);
+    const s1=fitText(x,trModels[0]||'—',440,40);x.font=`700 ${s1}px -apple-system,Segoe UI,Arial`;x.fillStyle='#e8edf6';x.fillText(trModels[0]||'—',colC[0],labY+48);
+    const buyLabel=buyModels[0]||'—';const s2=fitText(x,buyLabel,440,40);x.font=`700 ${s2}px -apple-system,Segoe UI,Arial`;x.fillStyle='#ffffff';x.fillText(buyLabel,colC[1],labY+48);
+    if(buyModels.length>1){x.fillStyle='#8fa0bd';x.font='600 26px -apple-system,Segoe UI,Arial';x.fillText('+ '+(buyModels.length-1)+' aparelho(s)',colC[1],labY+84);}
+    y+=tradeH;
+  } else if(buyModels.length){
+    x.fillStyle='#ffffff';const s=fitText(x,buyModels[0],820,56);x.font=`700 ${s}px -apple-system,Segoe UI,Arial`;x.fillText(buyModels[0],W/2,y+70);
+    y+=120;
+  }
+  // valor
+  let vlabel,vval,vcolor;
+  if(hasTrade&&rawDiff<0){vlabel='VOCÊ RECEBE NO PIX';vval=brl(-rawDiff);vcolor='#34d399';}
+  else if(hasTrade){vlabel='DIFERENÇA PRA LEVAR';vval=brl(rawDiff);vcolor='#f5c518';}
+  else {vlabel='VALOR';vval=brl(np);vcolor='#f5c518';}
+  x.fillStyle='rgba(245,197,24,0.10)';roundRect(x,W*0.12,y+10,W*0.76,140,24);x.fill();
+  x.textAlign='center';
+  x.fillStyle='#aab6cc';x.font='600 30px -apple-system,Segoe UI,Arial';x.fillText(vlabel,W/2,y+58);
+  x.fillStyle=vcolor;x.font='800 72px -apple-system,Segoe UI,Arial';x.fillText(vval,W/2,y+128);
+  y+=valueH;
+  // parcelas
+  if(parcRows.length){
+    x.fillStyle='#8fa0bd';x.font='700 32px -apple-system,Segoe UI,Arial';x.textAlign='center';x.fillText('PARCELE NO CARTÃO (até 18x)',W/2,y+20);
+    const top=y+70,rh=120,colW=W/2,pad=70;
+    x.textAlign='left';
+    parcRows.forEach((r,i)=>{
+      const col=i<perCol?0:1, idx=i<perCol?i:i-perCol;
+      const cx=col*colW+pad, cy=top+idx*rh;
+      x.fillStyle='rgba(255,255,255,0.05)';roundRect(x,cx-10,cy-10,colW-pad-40,rh-24,16);x.fill();
+      x.fillStyle='#f5c518';x.font='800 40px -apple-system,Segoe UI,Arial';x.fillText(r.n+'x',cx+10,cy+42);
+      x.fillStyle='#ffffff';x.font='700 42px -apple-system,Segoe UI,Arial';x.fillText(brl(r.p),cx+105,cy+42);
+    });
+    y+=parcH;
+  }
+  // rodapé
+  y+=drawAcompanhaStrip(x,W,y);
+  x.textAlign='center';
+  x.fillStyle='#aab6cc';x.font='600 30px -apple-system,Segoe UI,Arial';x.fillText('Pix · cartão em até 18x · dinheiro',W/2,y+40);
+  x.fillStyle='#5f6f8c';x.font='500 27px -apple-system,Segoe UI,Arial';x.fillText('Gold iPhones · 2 lojas físicas desde 2020',W/2,y+84);
+  cv.toBlob(b=>{artBlob=b;const img=document.getElementById('artImg');img.src=URL.createObjectURL(b);document.getElementById('artWrap').style.display='block';},'image/png');
+}
+function buildCompareArt(rows,trLabel,hasTrade){
+  rows=rows.slice(0,3);const N=rows.length;const three=N>=3;
+  const valOf=r=>(typeof r.net==='number'?r.net:r.v);
+  const W=1080;const pw=three?150:200;const phoneH=pw*2.02;const py=235;
+  const centers=three?[W*0.19,W*0.5,W*0.81]:[W*0.27,W*0.73];
+  const nameMax=three?300:460,nameBase=three?34:44,valF=three?42:52,parcF=three?28:36;
+  const H=py+phoneH+56+78+130+108+24+(N===2?170:0)+130+(acpChecked()?110:0);
+  const cv=document.getElementById('artCanvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#131d36');g.addColorStop(1,'#060a14');x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.textAlign='center';
+  x.fillStyle='#f5c518';x.font='800 72px -apple-system,Segoe UI,Arial';x.fillText('GOLD iPHONES',W/2,110);
+  const cmpCust=custNameVal();drawSub(x,W,158,cmpCust?`${cmpCust}, qual vale mais a pena?`:'QUAL VALE MAIS A PENA?');
+  if(hasTrade&&trLabel){x.fillStyle='#8fa0bd';x.font='600 28px -apple-system,Segoe UI,Arial';x.fillText('Dando seu '+trLabel+' na troca',W/2,202);}
+  drawSeals(x,W);
+  rows.forEach((r,i)=>{
+    const c=centers[i],px=c-pw/2;
+    drawPhone(x,px,py,pw,'#f5c518');
+    const bens=(BEN[tierKey(r.m)]||BEN.comum).slice(0,3);
+    const fsB=three?15:19,sx=px+pw*0.13;let by=py+pw*0.82;const maxW=pw*0.74-fsB*0.8;
+    x.textAlign='left';
+    bens.forEach(bt=>{let f=fsB;x.font=`600 ${f}px -apple-system,Segoe UI,Arial`;while(x.measureText(bt).width>maxW&&f>10){f--;x.font=`600 ${f}px -apple-system,Segoe UI,Arial`;}x.fillStyle='#f5c518';x.beginPath();x.arc(sx,by-fsB*0.3,fsB*0.16,0,7);x.fill();x.fillStyle='#eef2fa';x.font=`600 ${f}px -apple-system,Segoe UI,Arial`;x.fillText(bt,sx+fsB*0.8,by);by+=fsB*1.95;});
+  });
+  x.strokeStyle='rgba(255,255,255,0.08)';x.lineWidth=2;
+  for(let i=1;i<N;i++){const mx=(centers[i-1]+centers[i])/2;x.beginPath();x.moveTo(mx,py);x.lineTo(mx,py+phoneH+30);x.stroke();}
+  let ly=py+phoneH+56;
+  rows.forEach((r,i)=>{const s=fitText(x,r.m,nameMax,nameBase);x.font=`700 ${s}px -apple-system,Segoe UI,Arial`;x.fillStyle='#ffffff';x.textAlign='center';x.fillText(r.m,centers[i],ly);});
+  ly+=78;
+  rows.forEach((r,i)=>{x.fillStyle='#8fa0bd';x.font='600 26px -apple-system,Segoe UI,Arial';x.fillText(hasTrade?'PRA LEVAR':'À VISTA',centers[i],ly);x.fillStyle='#f5c518';x.font=`800 ${valF}px -apple-system,Segoe UI,Arial`;x.fillText(brl(valOf(r)),centers[i],ly+54);});
+  ly+=130;
+  [12,18].forEach(n=>{const rate=(PARC.find(p=>p[0]===n)||[n,0])[1];rows.forEach((r,i)=>{const p=valOf(r)*(1+rate/100)/n;x.fillStyle='#cbd5e1';x.font=`600 ${parcF}px -apple-system,Segoe UI,Arial`;x.fillText(n+'x '+brl(p),centers[i],ly);});ly+=54;});
+  ly+=24;
+  if(N===2){
+    const dif=Math.abs((rows[1].v||0)-(rows[0].v||0));
+    x.fillStyle='rgba(245,197,24,0.10)';roundRect(x,W*0.14,ly,W*0.72,130,24);x.fill();
+    x.textAlign='center';x.fillStyle='#aab6cc';x.font='600 30px -apple-system,Segoe UI,Arial';x.fillText('DIFERENÇA ENTRE OS DOIS',W/2,ly+52);
+    x.fillStyle='#f5c518';x.font='800 62px -apple-system,Segoe UI,Arial';x.fillText(brl(dif),W/2,ly+116);
+    ly+=170;
+  }
+  ly+=drawAcompanhaStrip(x,W,ly);
+  x.textAlign='center';x.fillStyle='#8fa0bd';x.font='600 30px -apple-system,Segoe UI,Arial';x.fillText('Pix · cartão em até 18x · dinheiro',W/2,ly+30);
+  x.fillStyle='#5f6f8c';x.font='500 27px -apple-system,Segoe UI,Arial';x.fillText('Gold iPhones · 2 lojas físicas desde 2020',W/2,ly+74);
+  cv.toBlob(bl=>{artBlob=bl;const img=document.getElementById('artImg');img.src=URL.createObjectURL(bl);document.getElementById('artWrap').style.display='block';},'image/png');
+}
+function roundRect(x,px,py,w,h,r){x.beginPath();x.moveTo(px+r,py);x.arcTo(px+w,py,px+w,py+h,r);x.arcTo(px+w,py+h,px,py+h,r);x.arcTo(px,py+h,px,py,r);x.arcTo(px,py,px+w,py,r);x.closePath();}
+function acpChecked(){const e=document.getElementById('incAcp');return !e||e.checked;}
+function custNameVal(){const e=document.getElementById('custName');return e?e.value.trim():'';}
+function drawSub(x,W,y,txt,fs){fs=fs||34;x.font=`600 ${fs}px -apple-system,Segoe UI,Arial`;while(x.measureText(txt).width>W-110&&fs>22){fs-=2;x.font=`600 ${fs}px -apple-system,Segoe UI,Arial`;}x.fillStyle='#aab6cc';x.textAlign='center';x.fillText(txt,W/2,y);}
+function sealPill(x,px,py,txt){x.font='700 22px -apple-system,Segoe UI,Arial';const w=x.measureText(txt).width+36,h=44;x.fillStyle='rgba(245,197,24,0.13)';roundRect(x,px,py,w,h,h/2);x.fill();x.strokeStyle='rgba(245,197,24,0.5)';x.lineWidth=2;roundRect(x,px,py,w,h,h/2);x.stroke();x.fillStyle='#f5c518';x.textAlign='left';x.textBaseline='middle';x.fillText(txt,px+18,py+h/2);x.textBaseline='alphabetic';return w;}
+function drawSeals(x,W){if(!acpChecked())return;sealPill(x,30,24,'SEMINOVO PREMIUM');x.font='700 22px -apple-system,Segoe UI,Arial';const w=x.measureText('GARANTIA DE NOVO').width+36;sealPill(x,W-30-w,24,'GARANTIA DE NOVO');}
+function drawAcompanhaStrip(x,W,y){if(!acpChecked())return 0;x.textAlign='center';x.fillStyle='#8fa0bd';x.font='600 26px -apple-system,Segoe UI,Arial';x.fillText('Fonte G-Shield 5 anos  ·  Cabo original  ·  Película + capinha',W/2,y+30);x.fillStyle='#f5c518';x.font='700 27px -apple-system,Segoe UI,Arial';x.fillText('1 ano de garantia — garantia de novo, preço de seminovo',W/2,y+74);return 100;}
+async function copyArt(ev){const b=ev&&ev.target;if(!artBlob){return;}try{await navigator.clipboard.write([new ClipboardItem({'image/png':artBlob})]);if(b){const o=b.textContent;b.textContent='✅ Copiada!';setTimeout(()=>b.textContent=o,1500);}}catch(e){downloadArt();}}
+function downloadArt(){if(!artBlob)return;const a=document.createElement('a');a.href=URL.createObjectURL(artBlob);a.download='gold-parcelamento.png';document.body.appendChild(a);a.click();a.remove();}
+
+/* ======== MENSAGEM ======== */
+let cmpOn=false;
+function setCmp(v){cmpOn=v;const p=document.getElementById('segPedido'),c=document.getElementById('segCmp');if(!p||!c)return;
+  p.style.background=v?'transparent':'#f5c518';p.style.color=v?'#cbd5e1':'#111';
+  c.style.background=v?'#f5c518':'transparent';c.style.color=v?'#111':'#cbd5e1';}
+function generate(){
+  if(cmpOn){
+    const rows=buyRowsData().slice(0,3);
+    if(rows.length>=2){
+      const trMs=tradeModels();const tv=tradeTotal();const hasTr=tv>0&&trMs.length;
+      const items=rows.map(r=>({m:r.m,v:r.v,net:hasTr?Math.max(0,r.v-tv):r.v}));
+      const cust=document.getElementById('custName').value.trim();const saud=cust?`Olá, *${cust}*! `:'';
+      let t=`*GOLD iPHONES* 🏆\n\n${saud}Comparativo pra te ajudar a decidir 👇\n\n`;
+      if(hasTr)t+=`🔄 Dando seu *${trMs[0]}* na troca:\n\n`;
+      items.forEach(it=>{t+=`📱 *${it.m}* — ${hasTr?'fica':'à vista'} *${brl(it.net)}*${hasTr?' de diferença':''}\n`;});
+      if(items.length===2)t+=`\n↔️ Diferença entre eles: *${brl(Math.abs((items[1].v||0)-(items[0].v||0)))}*\n`;
+      t+=`\n💳 *As parcelas de cada um na arte abaixo* 👇\n`;
+      const pay=document.getElementById('payText').value.trim();if(pay)t+=`\n💳 _${pay}_\n`;
+      if(document.getElementById('incAcp').checked)t+=`\n✅ Todos com *1 ano de garantia* — garantia de novo, preço de seminovo. Acompanha fonte *G-Shield (5 anos)*, cabo original e película + capinha.\n`;
+      t+=`\nQual fica melhor pra você? 😉`;
+      document.getElementById('outText').textContent=t;
+      document.getElementById('out').classList.add('show');
+      buildCompareArt(items, hasTr?trMs[0]:'', hasTr);
+      document.getElementById('out').scrollIntoView({behavior:'smooth',block:'nearest'});
+      return;
+    }
+  }
+  const models=buyModels();
+  const np=buyTotal();
+  const trMs=tradeModels();
+  const tv=tradeTotal();
+  const pay=document.getElementById('payText').value.trim();
+  const cust=document.getElementById('custName').value.trim();
+  const incParc=document.getElementById('incParc').checked;
+  const rawDiff=np-tv;const hasTrade=tv>0&&trMs.length;const payable=hasTrade?Math.max(0,rawDiff):np;
+
+  let t=`*GOLD iPHONES* 🏆\n\n`;
+  const saud=cust?`Olá, *${cust}*! `:'';
+  if(hasTrade)t+=`${saud}Mandou muito bem no seu *${trMs[0]}*! 🙌\n\nSegue o seu orçamento 👇\n\n`;
+  else t+=`${saud}Segue o seu orçamento 👇\n\n`;
+  if(models.length){models.forEach(m=>t+=`📱 *${m}*\n`);}else{t+=`📱 *—*\n`;}
+  if(hasTrade){
+    if(trMs.length===1)t+=`🔄 Dando seu *${trMs[0]}* na troca:\n`;
+    else t+=`🔄 Dando na troca: *${trMs.join(' + ')}*\n`;
+    if(rawDiff>=0)t+=`\n✅ Pra levar, fica só *${brl(rawDiff)}* de diferença.\n`;
+    else t+=`\n💸 E a gente *te devolve ${brl(-rawDiff)}* no Pix! 🎉\n`;
+  }else{t+=`💰 *${models.length>1?'Total: ':''}${brl(np)}*\n`;}
+  buildSaleArt({buyModels:models,trModels:trMs,payable,rawDiff,hasTrade,incParc,np,tv});
+  if(incParc&&payable>0){
+    t+=`\n💳 *Simulação do cartão na arte abaixo* 👇 (até 18x)\n`;
+  }
+  if(pay)t+=`\n💳 _${pay}_\n`;
+  const incAcp=document.getElementById('incAcp').checked;
+  const incNao=document.getElementById('incNao').checked;
+  const acp=document.getElementById('acpText').value.trim();
+  const nao=document.getElementById('naoText').value.trim();
+  let fechou=false;
+  if(incAcp&&acp){t+=`\n${acp}\n`;fechou=true;}
+  if(incNao&&nao){t+=`\n${nao}\n`;fechou=true;}
+  if(!fechou)t+=`\nBora fechar? 🤝`;
+
+  document.getElementById('outText').textContent=t;
+  document.getElementById('out').classList.add('show');
+  document.getElementById('out').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function copyMsg(){
+  const t=document.getElementById('outText').textContent;const b=event.target;
+  navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='✅ Copiado!';setTimeout(()=>b.textContent=o,1500);})
+  .catch(()=>{const r=document.createRange();r.selectNode(document.getElementById('outText'));getSelection().removeAllRanges();getSelection().addRange(r);try{document.execCommand('copy');getSelection().removeAllRanges();}catch(e){}});
+}
+function sendWA(){window.open('https://wa.me/?text='+encodeURIComponent(document.getElementById('outText').textContent),'_blank');}
+
+/* ======== ÁUDIO ======== */
+let rec=null,recording=false,finalText='';
+function toggleRec(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){document.getElementById('michint').textContent='Navegador sem ditado. Usa o modo Manual.';return;}
+  if(recording){rec.stop();return;}
+  rec=new SR();rec.lang='pt-BR';rec.continuous=true;rec.interimResults=true;finalText='';
+  rec.onstart=()=>{recording=true;document.getElementById('micbtn').classList.add('rec');document.getElementById('micbtn').textContent='⏹️';document.getElementById('michint').textContent='Gravando… fala a negociação. Toque pra parar.';};
+  rec.onresult=(e)=>{let interim='';for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)finalText+=e.results[i][0].transcript+' ';else interim+=e.results[i][0].transcript;}const tr=document.getElementById('transcript');tr.classList.remove('empty');tr.textContent=(finalText+interim).trim()||'…';};
+  rec.onerror=(e)=>{document.getElementById('michint').textContent='Mic bloqueado ('+e.error+'). Fora do preview, no Chrome, funciona — ou usa o Manual.';};
+  rec.onend=()=>{recording=false;document.getElementById('micbtn').classList.remove('rec');document.getElementById('micbtn').textContent='🎙️';document.getElementById('michint').textContent='Toque pra gravar de novo.';if(finalText.trim())parseAudio();};
+  rec.start();
+}
+const NUMW={'zero':0,'um':1,'uma':1,'dois':2,'duas':2,'tres':3,'três':3,'quatro':4,'cinco':5,'seis':6,'sete':7,'oito':8,'nove':9,'dez':10,'onze':11,'doze':12,'treze':13,'quatorze':14,'catorze':14,'quinze':15,'dezesseis':16,'dezessete':17,'dezoito':18,'dezenove':19,'vinte':20,'trinta':30,'quarenta':40,'cinquenta':50,'sessenta':60,'setenta':70,'oitenta':80,'noventa':90,'cem':100,'cento':100,'duzentos':200,'trezentos':300,'quatrocentos':400,'quinhentos':500,'seiscentos':600,'setecentos':700,'oitocentos':800,'novecentos':900};
+function wordsToNum(str){const toks=str.split(/\s+/).filter(Boolean);let total=0,cur=0,found=false;for(let w of toks){w=w.replace(/[.,]/g,'');if(w==='e')continue;if(w==='mil'){cur=(cur||1)*1000;total+=cur;cur=0;found=true;continue;}if(NUMW[w]!=null){cur+=NUMW[w];found=true;}else{if(found&&(total||cur))break;}}total+=cur;return found?total:null;}
+function extractName(orig){
+  const low=(orig||'').toLowerCase();
+  const stop=new Set(['quer','vai','é','e','o','a','os','as','um','uma','que','vou','ta','tá','de','do','da','dos','das','pra','para','no','na','com','levar','comprar','pegar','deu','dar','dando','trocar','troca','troco','mil','reais','real','aqui','tem','esse','essa','meu','seu','iphone','celular','aparelho','max','pro','plus','mini','novo','lacrado','seminovo','gigas','giga']);
+  const triggers=[/cliente[,:\s]+(?:é\s+|[oa]\s+|chamad[oa]\s+|sr\.?\s+|senhor\s+|dona\s+|dr\.?\s+)*([a-zà-ÿ]{3,})/, /nome\s+(?:é\s+|d[oae]\s+)*([a-zà-ÿ]{3,})/, /chamad[oa]\s+([a-zà-ÿ]{3,})/];
+  for(const re of triggers){const m=low.match(re);if(m&&!stop.has(m[1]))return m[1].charAt(0).toUpperCase()+m[1].slice(1);}
+  return null;
+}
+function clearAudio(){limparTudo();}
+function limparTudo(){
+  finalText='';
+  const tr=document.getElementById('transcript');tr.textContent='A transcrição aparece aqui…';tr.classList.add('empty');
+  document.getElementById('michint').textContent='Toque e fale de novo.';
+  const cn=document.getElementById('custName');if(cn)cn.value='';
+  document.getElementById('buyRows').innerHTML=buyRowHTML();
+  document.getElementById('tradeRows').innerHTML=tradeRowHTML();
+  SEL.buy={line:null,variant:null};SEL.trade={line:null,variant:null};
+  renderPicker('buy');renderPicker('trade');
+  const out=document.getElementById('out');if(out)out.classList.remove('show');
+  const ot=document.getElementById('outText');if(ot)ot.textContent='';
+  clearArt();
+  recalc();
+}
+function parseAudio(){
+  const orig=(document.getElementById('transcript').textContent||'');
+  let raw=orig.toLowerCase().trim();
+  if(!raw||raw==='a transcrição aparece aqui…')return;
+  const nome=extractName(orig);
+  if(nome){const cn=document.getElementById('custName');if(cn&&!cn.value.trim())cn.value=nome;}
+  const t=raw.replace(/\bmil\b/g,' mil ').replace(/\s+/g,' ');
+  let price=null;
+  const CAPS=['64','128','256','512','1024'];
+  const mm=t.match(/((?:\w+\s){0,4}?mil(?:\s+e\s+\w+(?:\s+\w+)?)?)/);
+  if(mm){const n=wordsToNum(mm[1]);if(n&&n>=300)price=n;}
+  if(!price){const nums=[...t.matchAll(/\b(\d{3,6}(?:[.\s]\d{3})?)\b/g)].map(m=>parseNum(m[1])).filter(n=>n>=300&&!CAPS.includes(String(n)));if(nums.length)price=Math.max(...nums);}
+  function grabModel(seg){const pro=/pro\s*max|para\s*max|pra\s*max/.test(seg)?'Pro Max':/pro/.test(seg)?'Pro':/plus/.test(seg)?'Plus':/mini/.test(seg)?'mini':'';const num=seg.match(/\b(11|12|13|14|15|16|17)\b/);let cap='';for(const c of ['1024','512','256','128','64']){if(seg.includes(c)){cap=c;break;}}if(!num)return '';return `iPhone ${num[1]}${pro?' '+pro:''}${cap?' '+cap+'GB':''}`.trim();}
+  const splitIdx=t.search(/\b(troca|trocou|troco|deu|dando|dar|dá|dou|entregou|entregar|entrega|tem um)\b/);
+  let segNew=t,segTr='';
+  if(splitIdx>-1){segNew=t.slice(0,splitIdx);segTr=t.slice(splitIdx);}
+  const mNew=grabModel(segNew)||grabModel(t);const mTr=segTr?grabModel(segTr):'';
+  const lac=/(lacrad|selad|nunca aberto|na caixa)/.test(t)||(/\bnovo\b/.test(t)&&!/semi/.test(t));
+  if(mNew){if(!pickBestSell(mNew,lac)){const fb=document.querySelector('#buyRows .bm');if(fb)fb.value=mNew;}}
+  if(price){const fv=document.querySelector('#buyRows .bv');if(fv)fv.value=price;}
+  if(mTr){const f=document.querySelector('#tradeRows .trm');if(f){f.value=mTr;const av=avalLookup(mTr);if(av>0)f.closest('.trow').querySelector('.trv').value=av;}}
+  recalc();
+  document.getElementById('michint').textContent='Preenchido ✅ confere o valor da troca e toca em Gerar.';
+}
+
+/* ======== TABS / MODO ======== */
+function switchTab(x){
+  if((x==='sell'||x==='aval')&&!adminUnlocked){
+    const p=prompt('🔒 Área do dono — digite o PIN pra editar os preços:');
+    if(p===null)return;
+    if(String(p).trim()!==ADMIN_PIN){alert('PIN incorreto.');return;}
+    adminUnlocked=true;
+  }
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.tab===x));
+  document.getElementById('tab-venda').style.display=x==='venda'?'':'none';
+  document.getElementById('tab-sell').style.display=x==='sell'?'':'none';
+  document.getElementById('tab-aval').style.display=x==='aval'?'':'none';
+  if(x==='sell')renderSell();
+  if(x==='aval')renderAval();
+}
+function setMode(m){document.getElementById('mo-audio').classList.toggle('on',m==='audio');document.getElementById('mo-manual').classList.toggle('on',m==='manual');document.getElementById('box-audio').style.display=m==='audio'?'':'none';}
+
+/* ======== ACOMPANHA ======== */
+const ACP_DEF='📦 *E olha o que acompanha:*\n\n🔌 Fonte original G-Shield — *5 anos de garantia*, homologada pela Anatel\n🔗 Cabo USB-C original Apple — *1 ano de garantia*\n🛡️ Película + capinha premium\n💎 Aparelho com *1 ano de garantia* — garantia de novo, preço de seminovo\n\n🏪 A *Gold iPhones* tem *2 lojas físicas* e está no mercado *desde 2020* — tu compra com segurança, garantia de verdade e suporte de quem é referência há anos. 🥇\n\nPosso separar o seu agora? 😉';
+const NAO_DEF='❌ *Não acompanha:*\n• Caixa original\n• Fone de ouvido';
+function saveAcp(){try{localStorage.setItem('gold_acp_v3',document.getElementById('acpText').value);}catch(e){}}
+function saveNao(){try{localStorage.setItem('gold_nao_v1',document.getElementById('naoText').value);}catch(e){}}
+(function initTexts(){
+  let a=ACP_DEF;try{const s=localStorage.getItem('gold_acp_v3');if(s)a=s;}catch(e){}document.getElementById('acpText').value=a;
+  let n=NAO_DEF;try{const s=localStorage.getItem('gold_nao_v1');if(s)n=s;}catch(e){}document.getElementById('naoText').value=n;
+})();
+
+const SEL={buy:{line:null,variant:null},trade:{line:null,variant:null}};
+function parseModel(m){const s=m.replace(/iPhone\s*/i,'').trim();const lm=s.match(/^(\d{2}e?)/);const line=lm?lm[1]:'';const variant=s.slice(line.length).trim();return {line,variant};}
+function modelsFor(section){const data=section==='buy'?sell:aval;return data.map(r=>{const p=parseModel(r.m);return {line:p.line,variant:p.variant,c:r.c,m:r.m,v:r.v};});}
+function fillPicked(section,label,price){const sel=section==='buy'?'#buyRows .bm':'#tradeRows .trm';const inputs=[...document.querySelectorAll(sel)];let target=null;if(section==='buy'&&activeBuy&&document.body.contains(activeBuy)){target=activeBuy.querySelector('.bm');}if(!target)target=inputs.find(i=>!i.value.trim())||inputs[inputs.length-1];if(!target)return;target.value=label;const row=target.closest(section==='buy'?'.brow':'.trow');const vi=row.querySelector(section==='buy'?'.bv':'.trv');if(vi)vi.value=price>0?price:'';recalc();}
+function pickChip(section,level,val){const st=SEL[section];if(level==='line'){st.line=val;st.variant=null;}else if(level==='variant'){st.variant=val;}else if(level==='mem'){const d=modelsFor(section).find(x=>x.line===st.line&&x.variant===st.variant&&x.c===val);if(d)fillPicked(section,`${d.m} ${d.c}GB`,d.v);st.line=null;st.variant=null;}renderPicker(section);}
+function renderPicker(section){
+  const box=document.getElementById(section==='buy'?'buyChips':'tradeChips');if(!box)return;
+  const data=modelsFor(section);const st=SEL[section];
+  const vrank={'':0,'Plus':1,'Air':2,'Pro':3,'Pro Max':4};const mrank={'64':0,'128':1,'256':2,'512':3,'1TB':4};
+  const lines=[...new Set(data.map(d=>d.line))].sort((a,b)=>{const na=parseInt(a),nb=parseInt(b);return na!==nb?na-nb:a.length-b.length;});
+  let html='<div class="chiprow">'+lines.map(l=>`<button class="chip${st.line===l?' on':''}" onclick="pickChip('${section}','line','${l}')">${l}</button>`).join('')+'</div>';
+  if(st.line){
+    const vars=[...new Set(data.filter(d=>d.line===st.line).map(d=>d.variant))].sort((a,b)=>(vrank[a]??9)-(vrank[b]??9));
+    html+='<div class="chiprow">'+vars.map(v=>`<button class="chip${st.variant===v?' on':''}" onclick="pickChip('${section}','variant','${v.replace(/'/g,'')}')">${v||'Normal'}</button>`).join('')+'</div>';
+    if(st.variant!==null){
+      const mems=[...new Set(data.filter(d=>d.line===st.line&&d.variant===st.variant).map(d=>d.c))].sort((a,b)=>(mrank[a]??9)-(mrank[b]??9));
+      html+='<div class="chiprow">'+mems.map(mm=>`<button class="chip" onclick="pickChip('${section}','mem','${mm}')">${mm}${mm==='1TB'?'':'GB'}</button>`).join('')+'</div>';
+    }
+  }
+  box.innerHTML=html;
+}
+addBuy();addTrade();renderPicker('buy');renderPicker('trade');renderLineBudget();buildList();recalc();syncFromCloud();
+</script>
+</body>
+</html>
