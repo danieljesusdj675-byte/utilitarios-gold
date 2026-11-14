@@ -6,80 +6,136 @@
 <title>Gold iPhones — Gerador de Venda</title>
 <style>
   :root{
-    --bg:#080c17; --panel:#111a2e; --panel2:#18233c; --line:#26314c;
-    --gold:#e8b84a; --gold2:#ffd977; --txt:#eef2fa; --mut:#8792ab;
-    --green:#27c08a; --red:#ff5d6c; --blue:#3b7bff;
+    --bg:#0a0e1a; --bg2:#0f1526; --panel:#141b2e; --panel2:#1b2440; --line:#2a3550;
+    --gold:#e8b84a; --gold2:#ffd977; --txt:#eef2fa; --mut:#8b96b0;
+    --green:#27c08a; --red:#ff5d6c; --blue:#5b8cff;
+    --out:#0f1a14; --outln:#1e3a2c; --outbar:#0b140f;
+    --cardsh:0 1px 0 rgba(255,255,255,.03), 0 10px 30px rgba(0,0,0,.28);
+    --ring:rgba(232,184,74,.18); --r:16px;
+  }
+  html[data-theme="light"]{
+    --bg:#eaeef7; --bg2:#f6f8fc; --panel:#ffffff; --panel2:#f1f4fb; --line:#e3e8f2;
+    --gold:#c99a2e; --gold2:#a9801f; --txt:#161c2b; --mut:#69748f;
+    --green:#17a877; --red:#e0485a; --blue:#3b7bff;
+    --out:#edfaf3; --outln:#c7ead9; --outbar:#e2f4ea;
+    --cardsh:0 1px 2px rgba(20,30,60,.05), 0 10px 28px rgba(20,30,60,.07);
+    --ring:rgba(201,154,46,.22);
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;background:radial-gradient(135% 80% at 50% 0%,#0e1830,var(--bg));min-height:100vh;color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.45}
-  .wrap{max-width:620px;margin:0 auto;padding:16px 16px 60px}
-  header{display:flex;align-items:center;gap:12px;padding:10px 0 18px}
-  .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--gold),#8a6d1d);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 2px 14px rgba(212,175,55,.35)}
-  h1{font-size:19px;margin:0;font-weight:700;letter-spacing:.2px}
-  h1 span{color:var(--blue)}
-  .sub{color:var(--mut);font-size:12.5px;margin-top:1px}
-  .tabs{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px;margin-bottom:16px}
-  .tab{flex:1;text-align:center;padding:10px;border-radius:10px;font-weight:600;font-size:13.5px;color:var(--mut);cursor:pointer;transition:.15s}
-  .tab.on{background:linear-gradient(135deg,var(--gold),#a9872a);color:#1a1405;box-shadow:0 2px 10px rgba(212,175,55,.3)}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
-  .card h2{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin:0 0 12px}
+  body{margin:0;background:
+      radial-gradient(120% 70% at 50% -10%, var(--bg2), var(--bg) 60%) fixed;
+      min-height:100vh;color:var(--txt);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+      font-size:16px;line-height:1.45;transition:background .25s,color .25s}
+  .wrap{max-width:1140px;margin:0 auto;padding:18px 18px 72px}
+  header{display:flex;align-items:center;gap:13px;padding:8px 2px 20px}
+  .logo{width:46px;height:46px;border-radius:13px;overflow:hidden;flex:0 0 auto;
+      background:linear-gradient(135deg,var(--gold),#8a6d1d);
+      display:flex;align-items:center;justify-content:center;font-size:24px;
+      box-shadow:0 4px 18px rgba(232,184,74,.35)}
+  .logo img{width:100%;height:100%;object-fit:cover;display:block}
+  .htext{flex:1;min-width:0}
+  h1{font-size:20px;margin:0;font-weight:800;letter-spacing:.2px}
+  h1 span{color:var(--gold)}
+  .sub{color:var(--mut);font-size:12.5px;margin-top:2px}
+  .themebtn{flex:0 0 auto;width:42px;height:42px;border-radius:12px;border:1px solid var(--line);
+      background:var(--panel);color:var(--txt);font-size:19px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;box-shadow:var(--cardsh);transition:.15s}
+  .themebtn:active{transform:scale(.92)}
+  .tabs{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:15px;
+      padding:5px;gap:5px;margin-bottom:18px;box-shadow:var(--cardsh)}
+  .tab{flex:1;text-align:center;padding:11px;border-radius:11px;font-weight:700;font-size:13.5px;
+      color:var(--mut);cursor:pointer;transition:.15s}
+  .tab.on{background:linear-gradient(135deg,var(--gold),#a9872a);color:#1a1405;
+      box-shadow:0 3px 12px rgba(232,184,74,.3)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+      padding:18px;margin-bottom:14px;box-shadow:var(--cardsh)}
+  .card h2{font-size:12px;text-transform:uppercase;letter-spacing:1.2px;color:var(--gold);margin:0 0 13px;font-weight:800}
   label{display:block;font-size:12.5px;color:var(--mut);margin:0 0 5px;font-weight:600}
-  input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:12px;font-size:15px;font-family:inherit;outline:none}
-  input:focus,textarea:focus{border-color:var(--gold)}
+  input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:11px;
+      color:var(--txt);padding:12px 13px;font-size:15px;font-family:inherit;outline:none;transition:.15s}
+  input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--ring)}
+  input::placeholder,textarea::placeholder{color:var(--mut)}
   .row{display:flex;gap:10px}
   .row>div{flex:1}
   .mb{margin-bottom:12px}
-  .seg{display:flex;gap:6px;margin-bottom:14px}
-  .seg button{flex:1;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--mut);font-weight:600;font-size:13.5px;cursor:pointer}
-  .seg button.on{border-color:var(--gold);background:rgba(212,175,55,.12);color:var(--gold2)}
-  .mic{display:flex;flex-direction:column;align-items:center;gap:12px;padding:8px 0 4px}
-  .micbtn{width:92px;height:92px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--gold),#8a6d1d);color:#1a1405;font-size:38px;cursor:pointer;box-shadow:0 4px 24px rgba(212,175,55,.4);transition:.15s;display:flex;align-items:center;justify-content:center}
+  .seg{display:flex;gap:7px;margin-bottom:14px;background:var(--panel);border:1px solid var(--line);
+      border-radius:14px;padding:5px;box-shadow:var(--cardsh)}
+  .seg button{flex:1;padding:11px;border-radius:10px;border:none;background:transparent;color:var(--mut);
+      font-weight:700;font-size:13.5px;cursor:pointer;transition:.15s}
+  .seg button.on{background:linear-gradient(135deg,var(--gold),#a9872a);color:#1a1405;
+      box-shadow:0 3px 10px rgba(232,184,74,.28)}
+  .mic{display:flex;flex-direction:column;align-items:center;gap:12px;padding:10px 0 4px}
+  .micbtn{width:96px;height:96px;border-radius:50%;border:none;
+      background:linear-gradient(135deg,var(--gold),#8a6d1d);color:#1a1405;font-size:40px;cursor:pointer;
+      box-shadow:0 6px 28px rgba(232,184,74,.42);transition:.15s;display:flex;align-items:center;justify-content:center}
   .micbtn:active{transform:scale(.95)}
   .micbtn.rec{background:linear-gradient(135deg,var(--red),#a01722);animation:pulse 1.3s infinite}
   @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,93,108,.55)}70%{box-shadow:0 0 0 22px rgba(255,93,108,0)}100%{box-shadow:0 0 0 0 rgba(255,93,108,0)}}
   .mic .hint{color:var(--mut);font-size:13px;text-align:center}
-  .transcript{background:var(--panel2);border:1px dashed var(--line);border-radius:10px;padding:11px;font-size:14px;min-height:46px;color:var(--txt)}
+  .transcript{background:var(--panel2);border:1px dashed var(--line);border-radius:11px;padding:12px;
+      font-size:14px;min-height:46px;color:var(--txt)}
   .transcript.empty{color:var(--mut);font-style:italic}
-  .btn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-size:15.5px;font-weight:700;cursor:pointer;margin-top:4px}
-  .btn-gold{background:linear-gradient(135deg,var(--gold),#a9872a);color:#1a1405}
-  .btn-ghost{background:var(--panel2);border:1px solid var(--line);color:var(--txt);font-weight:600}
-  .out{background:#0f1a14;border:1px solid #1e3a2c;border-radius:14px;overflow:hidden;margin-top:14px;display:none}
+  .btn{display:block;width:100%;padding:14px;border:none;border-radius:13px;font-size:15.5px;
+      font-weight:800;cursor:pointer;margin-top:4px;transition:.15s}
+  .btn:active{transform:translateY(1px)}
+  .btn-gold{background:linear-gradient(135deg,var(--gold),#a9872a);color:#1a1405;
+      box-shadow:0 5px 18px rgba(232,184,74,.32)}
+  .btn-ghost{background:var(--panel2);border:1px solid var(--line);color:var(--txt);font-weight:700}
+  .out{background:var(--out);border:1px solid var(--outln);border-radius:var(--r);overflow:hidden;margin-top:14px;display:none;box-shadow:var(--cardsh)}
   .out.show{display:block}
-  .out pre{margin:0;padding:15px;white-space:pre-wrap;word-wrap:break-word;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:14.5px;line-height:1.5}
-  .out .bar{display:flex;gap:8px;padding:10px;background:#0b140f;border-top:1px solid #1e3a2c}
-  .out .bar button{flex:1;padding:12px;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer}
+  .out pre{margin:0;padding:16px;white-space:pre-wrap;word-wrap:break-word;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:14.5px;line-height:1.5}
+  .out .bar{display:flex;gap:8px;padding:11px;background:var(--outbar);border-top:1px solid var(--outln)}
+  .out .bar button{flex:1;padding:13px;border:none;border-radius:11px;font-weight:800;font-size:14px;cursor:pointer;transition:.15s}
+  .out .bar button:active{transform:translateY(1px)}
   .copy{background:var(--green);color:#042016}
   .wa{background:#25d366;color:#04210f}
-  .calc{display:flex;justify-content:space-between;align-items:center;background:var(--panel2);border-radius:10px;padding:12px 14px;margin-top:10px}
+  .calc{display:flex;justify-content:space-between;align-items:center;background:var(--panel2);
+      border-radius:12px;padding:13px 15px;margin-top:10px}
   .calc .lbl{color:var(--mut);font-size:13px}
-  .calc .val{font-size:22px;font-weight:800;color:var(--gold2)}
+  .calc .val{font-size:23px;font-weight:800;color:var(--gold2)}
+  .calc.diff{background:linear-gradient(135deg,rgba(39,192,138,.14),rgba(39,192,138,.03));border:1px solid rgba(39,192,138,.28)}
   .calc.diff .val{color:var(--green)}
   .small{font-size:12px;color:var(--mut);margin-top:6px}
   table{width:100%;border-collapse:collapse;font-size:13.5px}
-  th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+  th,td{text-align:left;padding:9px 6px;border-bottom:1px solid var(--line)}
   th{color:var(--gold);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
-  td input{padding:7px 8px;font-size:13.5px}
+  td input{padding:8px 9px;font-size:13.5px}
   .tnum{width:104px}
   .trash{background:none;border:none;color:var(--red);font-size:17px;cursor:pointer;padding:0 4px}
-  .sellbox{background:linear-gradient(135deg,rgba(74,163,255,.12),rgba(74,163,255,.02));border:1px solid rgba(74,163,255,.3);border-radius:12px;padding:12px 14px;margin-top:8px;font-size:13.5px}
-  .drop{position:absolute;left:0;right:0;top:100%;z-index:30;background:var(--panel2);border:1px solid var(--gold);border-radius:10px;margin-top:4px;max-height:280px;overflow-y:auto;display:none;box-shadow:0 12px 34px rgba(0,0,0,.5)}
+  .sellbox{background:linear-gradient(135deg,rgba(91,140,255,.12),rgba(91,140,255,.02));
+      border:1px solid rgba(91,140,255,.3);border-radius:12px;padding:12px 14px;margin-top:8px;font-size:13.5px}
+  .drop{position:absolute;left:0;right:0;top:100%;z-index:30;background:var(--panel2);border:1px solid var(--gold);
+      border-radius:11px;margin-top:4px;max-height:280px;overflow-y:auto;display:none;box-shadow:0 14px 38px rgba(0,0,0,.4)}
   .drop.show{display:block}
-  .drop .opt{padding:12px 13px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;justify-content:space-between;gap:10px;font-size:14.5px;align-items:center}
+  .drop .opt{padding:12px 13px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;
+      justify-content:space-between;gap:10px;font-size:14.5px;align-items:center}
   .drop .opt:last-child{border-bottom:none}
-  .drop .opt:active{background:rgba(245,197,24,.18)}
+  .drop .opt:active{background:var(--ring)}
   .drop .opt b{color:var(--gold2)}
-  .drop .opt .pr{color:#9cc9ff;font-weight:700;white-space:nowrap}
+  .drop .opt .pr{color:var(--blue);font-weight:700;white-space:nowrap}
   .drop .none{padding:13px;color:var(--mut);font-size:13px}
   .chk{display:flex;align-items:center;gap:9px;margin-top:12px;cursor:pointer;color:var(--txt);font-weight:600;font-size:14px}
   .chk input{width:20px;height:20px;accent-color:var(--gold);flex:0 0 auto}
-  .chiprow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-  .chip{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:9px 13px;font-size:14px;font-weight:700;cursor:pointer}
-  .chip:active{background:rgba(245,197,24,.2);border-color:var(--gold)}
+  .chiprow{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+  .chip{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:10px;
+      padding:9px 13px;font-size:14px;font-weight:700;cursor:pointer;transition:.12s}
+  .chip:active{background:var(--ring);border-color:var(--gold)}
   .chip.on{background:var(--gold);color:#1a1405;border-color:var(--gold)}
   .selopts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-  .selopts button{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:8px;padding:7px 10px;font-size:12.5px;cursor:pointer}
+  .selopts button{background:var(--panel2);border:1px solid var(--line);color:var(--txt);border-radius:9px;
+      padding:7px 11px;font-size:12.5px;cursor:pointer}
   .muted{color:var(--mut)}
-  .foot{text-align:center;color:var(--mut);font-size:11px;margin-top:24px}
+  .foot{text-align:center;color:var(--mut);font-size:11px;margin-top:26px}
+  @media(min-width:900px){
+    .wrap{padding:22px 24px 80px}
+    #tab-venda{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+    #tab-venda>*{margin-top:0;margin-bottom:0}
+    #tab-venda>.seg,#tab-venda>#box-audio,#tab-venda>#cardFech,
+    #tab-venda>#genBtn,#tab-venda>.out,#tab-venda>#artCanvas{grid-column:1 / -1}
+    #tab-sell,#tab-aval{max-width:880px;margin:0 auto}
+  }
 </style>
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icon-180.png">
@@ -92,11 +148,12 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="logo">🐝</div>
-    <div>
+    <div class="logo"><img src="/icon-180.png" alt="Gold"></div>
+    <div class="htext">
       <h1>GOLD <span>iPHONES</span></h1>
       <div class="sub">Gerador de mensagem de venda</div>
     </div>
+    <button id="themeBtn" class="themebtn" onclick="toggleTheme()" title="Alternar tema claro/escuro" aria-label="Alternar tema">☀️</button>
   </header>
 
   <div class="tabs">
@@ -144,7 +201,7 @@
       <div class="small">O valor você digita ou fala — não aparece pro cliente, só a diferença final.</div>
     </div>
 
-    <div class="card">
+    <div class="card" id="cardFech">
       <h2>Fechamento</h2>
       <div class="calc"><span class="lbl">Preço de venda</span><span class="val" id="sumNew">R$ 0,00</span></div>
       <div class="calc" id="rowTrade" style="display:none;margin-top:8px"><span class="lbl">− Troca</span><span class="val" style="color:var(--red)" id="sumTrade">R$ 0,00</span></div>
@@ -160,8 +217,8 @@
       <div style="margin:4px 0 10px">
         <div class="small" style="margin-bottom:6px">Os 2 aparelhos são:</div>
         <div style="display:flex;gap:8px">
-          <button type="button" id="segPedido" onclick="setCmp(false)" style="flex:1;padding:12px;border-radius:12px;border:1px solid #2a3550;background:#f5c518;color:#111;font-weight:700;cursor:pointer">🧾 Pedido único</button>
-          <button type="button" id="segCmp" onclick="setCmp(true)" style="flex:1;padding:12px;border-radius:12px;border:1px solid #2a3550;background:transparent;color:#cbd5e1;font-weight:700;cursor:pointer">⚖️ Comparar 2</button>
+          <button type="button" id="segPedido" onclick="setCmp(false)" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--line);background:#e8b84a;color:#1a1405;font-weight:700;cursor:pointer">🧾 Pedido único</button>
+          <button type="button" id="segCmp" onclick="setCmp(true)" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--mut);font-weight:700;cursor:pointer">⚖️ Comparar 2</button>
         </div>
       </div>
       <label class="chk"><input type="checkbox" id="incParc" checked> Incluir simulação do cartão (parcelamento)</label>
@@ -518,8 +575,8 @@ function downloadArt(){if(!artBlob)return;const a=document.createElement('a');a.
 /* ======== MENSAGEM ======== */
 let cmpOn=false;
 function setCmp(v){cmpOn=v;const p=document.getElementById('segPedido'),c=document.getElementById('segCmp');if(!p||!c)return;
-  p.style.background=v?'transparent':'#f5c518';p.style.color=v?'#cbd5e1':'#111';
-  c.style.background=v?'#f5c518':'transparent';c.style.color=v?'#111':'#cbd5e1';}
+  p.style.background=v?'transparent':'#e8b84a';p.style.color=v?'var(--mut)':'#1a1405';
+  c.style.background=v?'#e8b84a':'transparent';c.style.color=v?'#1a1405':'var(--mut)';}
 function generate(){
   if(cmpOn){
     const rows=buyRowsData().slice(0,3);
@@ -698,6 +755,14 @@ function renderPicker(section){
   box.innerHTML=html;
 }
 addBuy();addTrade();renderPicker('buy');renderPicker('trade');renderLineBudget();buildList();recalc();syncFromCloud();
+</script>
+<script>
+(function(){var K='goldTheme',r=document.documentElement;
+function apply(t){r.setAttribute('data-theme',t);try{localStorage.setItem(K,t)}catch(e){}
+  var m=document.querySelector('meta[name=theme-color]');if(m)m.content=(t==='light'?'#eaeef7':'#0a0e1a');
+  var b=document.getElementById('themeBtn');if(b)b.textContent=(t==='light'?'🌙':'☀️');}
+window.toggleTheme=function(){apply(r.getAttribute('data-theme')==='light'?'dark':'light')};
+var saved;try{saved=localStorage.getItem(K)}catch(e){}apply(saved||'dark');})();
 </script>
 </body>
 </html>
