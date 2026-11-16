@@ -808,9 +808,24 @@ function renderPicker(section){
     if(st.variant!==null){
       const mems=[...new Set(data.filter(d=>d.line===st.line&&d.variant===st.variant).map(d=>d.c))].sort((a,b)=>(mrank[a]??9)-(mrank[b]??9));
       html+='<div class="chiprow">'+mems.map(mm=>`<button class="chip" onclick="pickChip('${section}','mem','${mm}')">${mm}${mm==='1TB'?'':'GB'}</button>`).join('')+'</div>';
+      if(section==='buy'&&mems.length>1)html+=`<div class="chiprow"><button class="chip" style="background:rgba(232,184,74,.16);border-color:var(--gold);color:var(--gold2)" onclick="orcarMemorias()">📊 Cotar todas as memórias (lado a lado)</button></div>`;
     }
   }
   box.innerHTML=html;
+}
+function orcarMemorias(){
+  const st=SEL.buy;if(!st.line||st.variant===null){alert('Escolhe a linha e a variação (ex: 15 · Pro Max) primeiro.');return;}
+  const mr={'64':0,'128':1,'256':2,'512':3,'1024':4,'1TB':4};
+  const rows=sell.filter(r=>{const p=parseModel(r.m);return p.line===st.line&&p.variant===st.variant;})
+    .map(r=>{const novo=cond==='novo'&&r.vl;return {m:`${r.m} ${r.c}GB`+(novo?' (Lacrado)':''),v:novo?r.vl:r.v,c:r.c};})
+    .filter(r=>r.v>0).sort((a,b)=>(mr[a.c]??9)-(mr[b.c]??9));
+  if(rows.length<2){alert('Preciso de pelo menos 2 memórias com preço nessa variação. Preenche na aba Preços.');return;}
+  const pick=rows.slice(0,3);
+  const box=document.getElementById('buyRows');box.innerHTML='';
+  pick.forEach(()=>box.insertAdjacentHTML('beforeend',buyRowHTML()));
+  const brows=document.querySelectorAll('#buyRows .brow');
+  pick.forEach((p,i)=>{brows[i].querySelector('.bm').value=p.m;brows[i].querySelector('.bv').value=p.v;});
+  SEL.buy={line:null,variant:null};activeBuy=null;renderPicker('buy');setCmp(true);recalc();generate();
 }
 addBuy();addTrade();renderPicker('buy');renderPicker('trade');renderLineBudget();buildList();recalc();syncFromCloud();
 </script>
