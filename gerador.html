@@ -211,7 +211,7 @@
 
     <div class="card" id="cardFech">
       <h2>Fechamento</h2>
-      <div class="calc"><span class="lbl">Preço de venda</span><span class="val" id="sumNew">R$ 0,00</span></div>
+      <div class="calc"><span class="lbl" id="newLbl">Preço de venda</span><span class="val" id="sumNew">R$ 0,00</span></div>
       <div class="calc" id="rowTrade" style="display:none;margin-top:8px"><span class="lbl">− Troca</span><span class="val" style="color:var(--red)" id="sumTrade">R$ 0,00</span></div>
       <div class="calc diff" style="margin-top:8px"><span class="lbl" id="diffLbl">Total a pagar</span><span class="val" id="sumDiff">R$ 0,00</span></div>
       <div class="mb" style="margin-top:14px">
@@ -451,9 +451,22 @@ function selTrade(el,label,val){const row=el.closest('.trow');row.querySelector(
 function avalLookup(text){const q=(text||'').toLowerCase().replace(/iphone/g,'').replace(/gb/g,'').trim();const terms=q.split(/\s+/).filter(Boolean);if(!terms.length)return 0;const hit=aval.find(r=>{const hay=(r.m+' '+r.c).toLowerCase();return terms.every(t=>hay.includes(t));});return hit?hit.v:0;}
 function addTrade(){document.getElementById('tradeRows').insertAdjacentHTML('beforeend',tradeRowHTML());}
 function recalc(){
-  const np=buyTotal();const tv=tradeTotal();const diff=np-tv;
-  document.getElementById('sumNew').textContent=brl(np);
-  const rowT=document.getElementById('rowTrade');const lbl=document.getElementById('diffLbl');
+  const tv=tradeTotal();
+  const sumNew=document.getElementById('sumNew'),rowT=document.getElementById('rowTrade'),lbl=document.getElementById('diffLbl'),newLbl=document.getElementById('newLbl');
+  const rows=buyRowsData();
+  if(cmpOn&&rows.length>=2){
+    const vals=rows.map(r=>r.v),mn=Math.min(...vals),mx=Math.max(...vals);
+    const diffs=rows.map(r=>Math.max(0,r.v-(tv>0?tv:0))),dmn=Math.min(...diffs),dmx=Math.max(...diffs);
+    if(newLbl)newLbl.textContent=`⚖️ Comparando ${rows.length} modelos`;
+    sumNew.textContent=`${brl(mn)} – ${brl(mx)}`;
+    if(tv>0){rowT.style.display='flex';document.getElementById('sumTrade').textContent=brl(tv);lbl.textContent='Diferença (cada modelo)';}
+    else{rowT.style.display='none';lbl.textContent='Valor (cada modelo)';}
+    document.getElementById('sumDiff').textContent=`${brl(dmn)} – ${brl(dmx)}`;
+    return;
+  }
+  const np=buyTotal();const diff=np-tv;
+  if(newLbl)newLbl.textContent='Preço de venda';
+  sumNew.textContent=brl(np);
   if(tv>0){rowT.style.display='flex';document.getElementById('sumTrade').textContent=brl(tv);lbl.textContent=diff>=0?'Diferença a pagar':'↩️ Devolvemos no Pix';}
   else{rowT.style.display='none';lbl.textContent='Total a pagar';}
   document.getElementById('sumDiff').textContent=brl(Math.abs(diff));
@@ -634,7 +647,7 @@ function repriceBuyRows(){document.querySelectorAll('#buyRows .brow').forEach(ro
 let cmpOn=false;
 function setCmp(v){cmpOn=v;const p=document.getElementById('segPedido'),c=document.getElementById('segCmp');if(!p||!c)return;
   p.style.background=v?'transparent':'#e8b84a';p.style.color=v?'var(--mut)':'#1a1405';
-  c.style.background=v?'#e8b84a':'transparent';c.style.color=v?'#1a1405':'var(--mut)';}
+  c.style.background=v?'#e8b84a':'transparent';c.style.color=v?'#1a1405':'var(--mut)';recalc();}
 function generate(){
   if(cmpOn){
     const rows=buyRowsData().slice(0,3);
