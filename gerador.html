@@ -488,8 +488,9 @@ function buildSaleArt(o){
   const parcRows=(incParc&&payable>0)?PARC.filter(r=>PARC_SHOW.includes(r[0])).map(r=>({n:r[0],p:payable*(1+r[1]/100)/r[0]})):[];
   const perCol=parcRows.length?Math.ceil(parcRows.length/2):0;
   const W=1080;
-  const headerH=200, tradeH=hasTrade?620:0, valueH=190, parcH=parcRows.length?(perCol*120+96):0, footerH=130;
-  const H=headerH+tradeH+valueH+parcH+footerH+40+(acpChecked()?110:0);
+  const headerH=200, tradeH=hasTrade?700:0, valueH=190, parcH=parcRows.length?(perCol*120+96):0, footerH=130;
+  const singleH=(!hasTrade&&buyModels.length)?200:0;
+  const H=headerH+tradeH+singleH+valueH+parcH+footerH+40+(acpChecked()?110:0);
   const cv=document.getElementById('artCanvas');cv.width=W;cv.height=H;
   const x=cv.getContext('2d');
   const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#131d36');g.addColorStop(1,'#060a14');x.fillStyle=g;x.fillRect(0,0,W,H);
@@ -510,11 +511,13 @@ function buildSaleArt(o){
     x.fillStyle='#f5c518';x.fillText('VOCÊ LEVA',colC[1],labY);
     const s1=fitText(x,trModels[0]||'—',440,40);x.font=`700 ${s1}px -apple-system,Segoe UI,Arial`;x.fillStyle='#e8edf6';x.fillText(trModels[0]||'—',colC[0],labY+48);
     const buyLabel=buyModels[0]||'—';const s2=fitText(x,buyLabel,440,40);x.font=`700 ${s2}px -apple-system,Segoe UI,Arial`;x.fillStyle='#ffffff';x.fillText(buyLabel,colC[1],labY+48);
-    if(buyModels.length>1){x.fillStyle='#8fa0bd';x.font='600 26px -apple-system,Segoe UI,Arial';x.fillText('+ '+(buyModels.length-1)+' aparelho(s)',colC[1],labY+84);}
+    condBalloon(x,colC[1],labY+100);
+    if(buyModels.length>1){x.fillStyle='#8fa0bd';x.font='600 26px -apple-system,Segoe UI,Arial';x.fillText('+ '+(buyModels.length-1)+' aparelho(s)',colC[1],labY+184);}
     y+=tradeH;
   } else if(buyModels.length){
-    x.fillStyle='#ffffff';const s=fitText(x,buyModels[0],820,56);x.font=`700 ${s}px -apple-system,Segoe UI,Arial`;x.fillText(buyModels[0],W/2,y+70);
-    y+=120;
+    x.fillStyle='#ffffff';const s=fitText(x,buyModels[0],820,56);x.font=`700 ${s}px -apple-system,Segoe UI,Arial`;x.fillText(buyModels[0],W/2,y+64);
+    condBalloon(x,W/2,y+128);
+    y+=singleH;
   }
   // valor
   let vlabel,vval,vcolor;
@@ -595,16 +598,19 @@ function acpChecked(){const e=document.getElementById('incAcp');return !e||e.che
 function custNameVal(){const e=document.getElementById('custName');return e?e.value.trim():'';}
 function drawSub(x,W,y,txt,fs){fs=fs||34;x.font=`600 ${fs}px -apple-system,Segoe UI,Arial`;while(x.measureText(txt).width>W-110&&fs>22){fs-=2;x.font=`600 ${fs}px -apple-system,Segoe UI,Arial`;}x.fillStyle='#aab6cc';x.textAlign='center';x.fillText(txt,W/2,y);}
 function sealPill(x,px,py,txt){x.font='700 22px -apple-system,Segoe UI,Arial';const w=x.measureText(txt).width+36,h=44;x.fillStyle='rgba(245,197,24,0.13)';roundRect(x,px,py,w,h,h/2);x.fill();x.strokeStyle='rgba(245,197,24,0.5)';x.lineWidth=2;roundRect(x,px,py,w,h,h/2);x.stroke();x.fillStyle='#f5c518';x.textAlign='left';x.textBaseline='middle';x.fillText(txt,px+18,py+h/2);x.textBaseline='alphabetic';return w;}
-function drawSeals(x,W){if(!acpChecked())return;const left=cond==='novo'?'NOVO · LACRADO':'SEMINOVO PREMIUM';const right=cond==='novo'?'GARANTIA APPLE':'GARANTIA DE NOVO';sealPill(x,30,24,left);x.font='700 22px -apple-system,Segoe UI,Arial';const w=x.measureText(right).width+36;sealPill(x,W-30-w,24,right);}
+function drawSeals(x,W){if(!acpChecked())return;const left=condName();const right=cond==='novo'?'2 ANOS DE GARANTIA':'GARANTIA DE NOVO';sealPill(x,30,24,left);x.font='700 22px -apple-system,Segoe UI,Arial';const w=x.measureText(right).width+36;sealPill(x,W-30-w,24,right);}
+function condBalloon(x,cx,cy){const name=condName();x.font='700 24px -apple-system,Segoe UI,Arial';const w=x.measureText(name).width+40,h=44,px=cx-w/2,py=cy-h/2;x.fillStyle='rgba(245,197,24,0.15)';roundRect(x,px,py,w,h,h/2);x.fill();x.strokeStyle='rgba(245,197,24,0.55)';x.lineWidth=2;roundRect(x,px,py,w,h,h/2);x.stroke();x.fillStyle='#f5c518';x.textAlign='center';x.textBaseline='middle';x.fillText(name,cx,cy);x.textBaseline='alphabetic';x.textAlign='center';x.fillStyle='#aab6cc';x.font='600 25px -apple-system,Segoe UI,Arial';x.fillText(condWarr(),cx,cy+h/2+30);}
 function drawAcompanhaStrip(x,W,y){if(!acpChecked())return 0;x.textAlign='center';x.fillStyle='#8fa0bd';x.font='600 26px -apple-system,Segoe UI,Arial';
   const l1=cond==='novo'?'Aparelho lacrado  ·  Nota fiscal  ·  Cabo + fonte originais':'Fonte G-Shield 5 anos  ·  Cabo original  ·  Película + capinha';
-  const l2=cond==='novo'?'1 ano de garantia Apple — zero, lacrado de fábrica':'1 ano de garantia — garantia de novo, preço de seminovo';
+  const l2=cond==='novo'?'2 anos de garantia — aparelho lacrado, zero de fábrica':'1 ano de garantia — garantia de novo, preço de seminovo';
   x.fillText(l1,W/2,y+30);x.fillStyle='#f5c518';x.font='700 27px -apple-system,Segoe UI,Arial';x.fillText(l2,W/2,y+74);return 100;}
 async function copyArt(ev){const b=ev&&ev.target;if(!artBlob){return;}try{await navigator.clipboard.write([new ClipboardItem({'image/png':artBlob})]);if(b){const o=b.textContent;b.textContent='✅ Copiada!';setTimeout(()=>b.textContent=o,1500);}}catch(e){downloadArt();}}
 function downloadArt(){if(!artBlob)return;const a=document.createElement('a');a.href=URL.createObjectURL(artBlob);a.download='gold-parcelamento.png';document.body.appendChild(a);a.click();a.remove();}
 
 /* ======== MENSAGEM ======== */
 let cond='semi'; /* 'semi' = seminovo | 'novo' = lacrado */
+function condName(){return cond==='novo'?'NOVO · LACRADO':'SEMINOVO PREMIUM';}
+function condWarr(){return cond==='novo'?'2 anos de garantia':'1 ano de garantia';}
 function setCond(v){cond=v;
   const s=document.getElementById('condSemi'),n=document.getElementById('condNovo');
   if(s&&n){s.style.background=v==='semi'?'#e8b84a':'transparent';s.style.color=v==='semi'?'#1a1405':'var(--mut)';
@@ -634,13 +640,13 @@ function generate(){
       const items=rows.map(r=>({m:r.m,v:r.v,net:hasTr?Math.max(0,r.v-tv):r.v}));
       const cust=document.getElementById('custName').value.trim();const saud=cust?`Olá, *${cust}*! `:'';
       let t=`*GOLD iPHONES* 🏆\n\n${saud}Comparativo pra te ajudar a decidir 👇\n\n`;
-      t+=cond==='novo'?`🆕 _Novos, lacrados — nota fiscal e garantia Apple_\n\n`:`♻️ _Seminovos premium — com garantia_\n\n`;
+      t+=cond==='novo'?`🆕 _Novos, lacrados — nota fiscal e *2 anos de garantia*_\n\n`:`♻️ _Seminovos premium — *1 ano de garantia*_\n\n`;
       if(hasTr)t+=`🔄 Dando seu *${trMs[0]}* na troca:\n\n`;
       items.forEach(it=>{t+=`📱 *${it.m}* — ${hasTr?'fica':'à vista'} *${brl(it.net)}*${hasTr?' de diferença':''}\n`;});
       if(items.length===2)t+=`\n↔️ Diferença entre eles: *${brl(Math.abs((items[1].v||0)-(items[0].v||0)))}*\n`;
       t+=`\n💳 *As parcelas de cada um na arte abaixo* 👇\n`;
       const pay=document.getElementById('payText').value.trim();if(pay)t+=`\n💳 _${pay}_\n`;
-      if(document.getElementById('incAcp').checked)t+=cond==='novo'?`\n✅ Todos *novos, lacrados* — nota fiscal e *1 ano de garantia Apple*. Cabo e fonte originais na caixa.\n`:`\n✅ Todos com *1 ano de garantia* — garantia de novo, preço de seminovo. Acompanha fonte *G-Shield (5 anos)*, cabo original e película + capinha.\n`;
+      if(document.getElementById('incAcp').checked)t+=cond==='novo'?`\n✅ Todos *novos, lacrados* — nota fiscal e *2 anos de garantia*. Cabo e fonte originais na caixa.\n`:`\n✅ Todos com *1 ano de garantia* — garantia de novo, preço de seminovo. Acompanha fonte *G-Shield (5 anos)*, cabo original e película + capinha.\n`;
       t+=`\nQual fica melhor pra você? 😉`;
       document.getElementById('outText').textContent=t;
       document.getElementById('out').classList.add('show');
@@ -663,7 +669,7 @@ function generate(){
   if(hasTrade)t+=`${saud}Mandou muito bem no seu *${trMs[0]}*! 🙌\n\nSegue o seu orçamento 👇\n\n`;
   else t+=`${saud}Segue o seu orçamento 👇\n\n`;
   if(models.length){models.forEach(m=>t+=`📱 *${m}*\n`);}else{t+=`📱 *—*\n`;}
-  t+=cond==='novo'?`🆕 _Novo, lacrado — nota fiscal e garantia Apple_\n`:`♻️ _Seminovo premium — com garantia_\n`;
+  t+=cond==='novo'?`🆕 _Novo, lacrado — nota fiscal e *2 anos de garantia*_\n`:`♻️ _Seminovo premium — *1 ano de garantia*_\n`;
   if(hasTrade){
     if(trMs.length===1)t+=`🔄 Dando seu *${trMs[0]}* na troca:\n`;
     else t+=`🔄 Dando na troca: *${trMs.join(' + ')}*\n`;
