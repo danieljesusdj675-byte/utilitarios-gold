@@ -185,6 +185,11 @@
 
     <div class="card">
       <h2>Aparelho(s) que o cliente leva <span class="muted" style="text-transform:none;font-weight:400">(pode ser mais de um)</span></h2>
+      <div class="small" style="margin-bottom:6px">Condição do aparelho:</div>
+      <div style="display:flex;gap:7px;margin:0 0 13px">
+        <button type="button" id="condSemi" onclick="setCond('semi')" style="flex:1;padding:11px;border-radius:11px;border:1px solid var(--line);background:#e8b84a;color:#1a1405;font-weight:700;cursor:pointer">♻️ Seminovo</button>
+        <button type="button" id="condNovo" onclick="setCond('novo')" style="flex:1;padding:11px;border-radius:11px;border:1px solid var(--line);background:transparent;color:var(--mut);font-weight:700;cursor:pointer">🆕 Novo (lacrado)</button>
+      </div>
       <div class="small" style="margin-bottom:6px">⚡ Orçar a linha inteira (normal · Pro · Pro Max) — abate a troca em cada:</div>
       <div class="chiprow" id="lineBudget"></div>
       <div class="chiprow" id="buyChips"></div>
@@ -303,13 +308,31 @@ async function supaSet(chave,dados){
 }
 async function syncFromCloud(){
   const d=await supaGetAll();if(!d)return;
-  if(Array.isArray(d.sell)&&d.sell.length){sell=d.sell;try{localStorage.setItem('gold_sell_v4',JSON.stringify(sell));}catch(e){}buildList();renderPicker('buy');renderLineBudget();}
-  if(Array.isArray(d.aval)&&d.aval.length){aval=d.aval;try{localStorage.setItem('gold_aval_v1',JSON.stringify(aval));}catch(e){}renderPicker('trade');}
+  if(Array.isArray(d.sell)&&d.sell.length){sell=mergeInto(d.sell,CATALOG_SELL());try{localStorage.setItem('gold_sell_v4',JSON.stringify(sell));}catch(e){}buildList();renderPicker('buy');renderLineBudget();}
+  if(Array.isArray(d.aval)&&d.aval.length){aval=mergeInto(d.aval,CATALOG_AVAL());try{localStorage.setItem('gold_aval_v1',JSON.stringify(aval));}catch(e){}renderPicker('trade');}
 }
 
 /* ======== TABELA DE PREÇO DE VENDA (seminovos 03/11) ======== */
 const DEFAULT_SELL = [
-  ["iPhone 11 Pro Max","64",1890,1290,0],["iPhone 11 Pro Max","256",2090,1499,0],["iPhone 12","64",1520,899,0],["iPhone 12","128",1730,1070,0],["iPhone 12 Pro","128",2000,1250,0],["iPhone 12 Pro","256",2130,1550,0],["iPhone 12 Pro Max","128",2500,1690,0],["iPhone 12 Pro Max","256",2620,1849,0],["iPhone 13","128",2090,1300,0],["iPhone 13","256",2290,1580,0],["iPhone 13 Pro","128",2890,0,0],["iPhone 13 Pro","256",2890,2050,0],["iPhone 13 Pro","512",3090,2190,0],["iPhone 13 Pro","1TB",3690,2650,0],["iPhone 13 Pro Max","128",3190,2290,0],["iPhone 13 Pro Max","256",3390,2580,0],["iPhone 14","128",2450,1600,0],["iPhone 14","256",2690,1800,0],["iPhone 14 Plus","128",2590,1700,0],["iPhone 14 Plus","256",2880,1880,0],["iPhone 14 Pro","128",3250,2400,0],["iPhone 14 Pro","256",3490,2650,0],["iPhone 14 Pro","512",3790,2890,0],["iPhone 14 Pro Max","128",3790,2850,0],["iPhone 14 Pro Max","256",3690,2999,0],["iPhone 14 Pro Max","512",4050,3250,0],["iPhone 15","128",3090,2290,4650],["iPhone 15 Plus","128",3390,2500,0],["iPhone 15 Pro","128",3890,3050,0],["iPhone 15 Pro","256",4090,3199,0],["iPhone 15 Pro","512",4390,3390,0],["iPhone 15 Pro Max","256",4530,3650,0],["iPhone 15 Pro Max","512",4790,3890,0],["iPhone 15 Pro Max","1TB",4970,4190,0],["iPhone 16","128",4290,3290,5300],["iPhone 16","256",4590,3499,0],["iPhone 16e","128",2790,1890,0],["iPhone 16 Plus","128",4590,3550,0],["iPhone 16 Pro","128",4790,3849,0],["iPhone 16 Pro","256",4980,4190,0],["iPhone 16 Pro","512",5290,4400,0],["iPhone 16 Pro Max","256",5590,4600,0],["iPhone 16 Pro Max","512",5900,4990,0],["iPhone 17","256",5170,4250,6100],["iPhone 17 Air","256",5230,4150,0],["iPhone 17 Pro","256",6790,5699,7650],["iPhone 17 Pro Max","256",7290,6199,8000],["iPhone 17 Pro Max","512",8490,7390,9300],["iPhone 18 Pro Max","512",0,0,11400],["iPhone 18 Pro Max","256",0,0,9500],["iPhone 18 Pro","256",0,0,8500],["iPhone Duo","256",0,0,18600]
+  ["iPhone 11 Pro Max","64",1890,1290,0],["iPhone 11 Pro Max","256",2090,1499,0],["iPhone 12","64",1520,899,0],["iPhone 12","128",1730,1070,0],["iPhone 12 Pro","128",2000,1250,0],["iPhone 12 Pro","256",2130,1550,0],["iPhone 12 Pro Max","128",2500,1690,0],["iPhone 12 Pro Max","256",2620,1849,0],["iPhone 13","128",2090,1300,0],["iPhone 13","256",2290,1580,0],["iPhone 13 Pro","128",2890,0,0],["iPhone 13 Pro","256",2890,2050,0],["iPhone 13 Pro","512",3090,2190,0],["iPhone 13 Pro","1TB",3690,2650,0],["iPhone 13 Pro Max","128",3190,2290,0],["iPhone 13 Pro Max","256",3390,2580,0],["iPhone 14","128",2450,1600,0],["iPhone 14","256",2690,1800,0],["iPhone 14 Plus","128",2590,1700,0],["iPhone 14 Plus","256",2880,1880,0],["iPhone 14 Pro","128",3250,2400,0],["iPhone 14 Pro","256",3490,2650,0],["iPhone 14 Pro","512",3790,2890,0],["iPhone 14 Pro Max","128",3790,2850,0],["iPhone 14 Pro Max","256",3690,2999,0],["iPhone 14 Pro Max","512",4050,3250,0],["iPhone 15","128",3090,2290,4650],["iPhone 15 Plus","128",3390,2500,0],["iPhone 15 Pro","128",3890,3050,0],["iPhone 15 Pro","256",4090,3199,0],["iPhone 15 Pro","512",4390,3390,0],["iPhone 15 Pro Max","256",4530,3650,0],["iPhone 15 Pro Max","512",4790,3890,0],["iPhone 15 Pro Max","1TB",4970,4190,0],["iPhone 16","128",4290,3290,5300],["iPhone 16","256",4590,3499,0],["iPhone 16e","128",2790,1890,0],["iPhone 16 Plus","128",4590,3550,0],["iPhone 16 Pro","128",4790,3849,0],["iPhone 16 Pro","256",4980,4190,0],["iPhone 16 Pro","512",5290,4400,0],["iPhone 16 Pro Max","256",5590,4600,0],["iPhone 16 Pro Max","512",5900,4990,0],["iPhone 17","256",5170,4250,6100],["iPhone 17 Air","256",5230,4150,0],["iPhone 17 Pro","256",6790,5699,7650],["iPhone 17 Pro Max","256",7290,6199,8000],["iPhone 17 Pro Max","512",8490,7390,9300],["iPhone 18 Pro Max","512",0,0,11400],["iPhone 18 Pro Max","256",0,0,9500],["iPhone 18 Pro","256",0,0,8500],["iPhone Duo","256",0,0,18600],
+  ["iPhone 8","64",0,0,0],["iPhone 8","128",0,0,0],["iPhone 8","256",0,0,0],
+  ["iPhone 8 Plus","64",0,0,0],["iPhone 8 Plus","128",0,0,0],["iPhone 8 Plus","256",0,0,0],
+  ["iPhone X","64",0,0,0],["iPhone X","256",0,0,0],
+  ["iPhone XR","64",0,0,0],["iPhone XR","128",0,0,0],["iPhone XR","256",0,0,0],
+  ["iPhone XS","64",0,0,0],["iPhone XS","256",0,0,0],["iPhone XS","512",0,0,0],
+  ["iPhone XS Max","64",0,0,0],["iPhone XS Max","256",0,0,0],["iPhone XS Max","512",0,0,0],
+  ["iPhone SE 2020","64",0,0,0],["iPhone SE 2020","128",0,0,0],["iPhone SE 2020","256",0,0,0],
+  ["iPhone SE 2022","64",0,0,0],["iPhone SE 2022","128",0,0,0],["iPhone SE 2022","256",0,0,0],
+  ["iPhone 11","64",0,0,0],["iPhone 11","128",0,0,0],["iPhone 11","256",0,0,0],
+  ["iPhone 11 Pro","64",0,0,0],["iPhone 11 Pro","256",0,0,0],["iPhone 11 Pro","512",0,0,0],
+  ["iPhone 11 Pro Max","512",0,0,0],
+  ["iPhone 12 mini","64",0,0,0],["iPhone 12 mini","128",0,0,0],["iPhone 12 mini","256",0,0,0],
+  ["iPhone 12 Pro Max","512",0,0,0],
+  ["iPhone 13 mini","128",0,0,0],["iPhone 13 mini","256",0,0,0],
+  ["iPhone 13","512",0,0,0],["iPhone 13 Pro Max","512",0,0,0],
+  ["iPhone 15","256",0,0,0],["iPhone 15 Plus","256",0,0,0],
+  ["iPhone 16","512",0,0,0],["iPhone 16 Plus","256",0,0,0],["iPhone 16 Pro Max","1TB",0,0,0],
+  ["iPhone 17","512",0,0,0],["iPhone 17 Pro","512",0,0,0],["iPhone 17 Pro Max","1TB",0,0,0]
 ];
 
 /* ======== TAXAS FIXAS (da maquininha) — não editáveis ======== */
@@ -319,14 +342,19 @@ const PARC_SHOW = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
 
 /* ======== AVALIAÇÃO DE TROCA (base Tabela Gold AB+ − R$300) — editável ======== */
 const DEFAULT_AVAL=[["iPhone 11 Pro Max","64",1250],["iPhone 12 Pro","128",1250],["iPhone 13","128",1350],["iPhone 13","256",1500],["iPhone 14","128",1550],["iPhone 14","256",1700],["iPhone 14 Plus","128",1700],["iPhone 14 Pro","128",2350],["iPhone 14 Pro","256",2500],["iPhone 14 Pro","512",2650],["iPhone 14 Pro Max","128",2750],["iPhone 14 Pro Max","256",2950],["iPhone 14 Pro Max","512",3050],["iPhone 15","128",2250],["iPhone 15 Plus","128",2400],["iPhone 15 Pro","128",2950],["iPhone 15 Pro Max","256",3650],["iPhone 16e","128",3000],["iPhone 16","128",3250],["iPhone 16 Plus","128",3350],["iPhone 16 Pro","128",3900],["iPhone 16 Pro Max","256",4650],["iPhone 17 Pro","256",5800]];
+/* ===== catálogo: garante todos os modelos (8+) nas duas tabelas, sem mexer nos preços já salvos ===== */
+function catKey(m,c){return (String(m)+'|'+String(c)).toLowerCase();}
+function mergeInto(data,entries){const have=new Set(data.map(r=>catKey(r.m,r.c)));entries.forEach(e=>{const k=catKey(e.m,e.c);if(!have.has(k)){data.push(e);have.add(k);}});return data;}
+function CATALOG_SELL(){return DEFAULT_SELL.map(r=>({m:r[0],c:r[1],v:r[2],vc:r[3]||0,vl:r[4]||0}));}
+function CATALOG_AVAL(){const seen=new Set(),out=[];DEFAULT_AVAL.forEach(r=>{const k=catKey(r[0],r[1]);if(!seen.has(k)){seen.add(k);out.push({m:r[0],c:r[1],v:r[2]});}});DEFAULT_SELL.forEach(r=>{const k=catKey(r[0],r[1]);if(!seen.has(k)){seen.add(k);out.push({m:r[0],c:r[1],v:0});}});return out;}
 let aval=loadAval();
-function loadAval(){try{const s=localStorage.getItem('gold_aval_v1');if(s)return JSON.parse(s);}catch(e){}return DEFAULT_AVAL.map(r=>({m:r[0],c:r[1],v:r[2]}));}
+function loadAval(){let base;try{const s=localStorage.getItem('gold_aval_v1');if(s)base=JSON.parse(s);}catch(e){}if(!base)base=DEFAULT_AVAL.map(r=>({m:r[0],c:r[1],v:r[2]}));return mergeInto(base,CATALOG_AVAL());}
 function saveAval(){const rows=[...document.querySelectorAll('#avalBody tr')].map(tr=>({m:tr.querySelector('.am').value.trim(),c:tr.querySelector('.ac').value.trim(),v:parseNum(tr.querySelector('.av').value)})).filter(r=>r.m);aval=rows;try{localStorage.setItem('gold_aval_v1',JSON.stringify(rows));}catch(e){}const el=document.getElementById('savedAval');el.textContent='⏳ Enviando pra todos os vendedores...';supaSet('aval',rows).then(ok=>{el.textContent=ok?'✅ Salvo e enviado pra toda a equipe':'✅ Salvo neste aparelho (nuvem indisponível)';setTimeout(()=>el.textContent='',3500);});renderPicker('trade');}
 function renderAval(){const b=document.getElementById('avalBody');b.innerHTML='';aval.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td><input class="am" value="${r.m}"></td><td><input class="ac" value="${r.c}" style="width:52px"></td><td><input class="av" inputmode="decimal" value="${r.v}" style="width:96px"></td><td><button class="trash" onclick="this.closest('tr').remove()">✕</button></td>`;b.appendChild(tr);});}
 function addRowAval(){const b=document.getElementById('avalBody');const tr=document.createElement('tr');tr.innerHTML=`<td><input class="am" placeholder="iPhone 13 Pro Max"></td><td><input class="ac" placeholder="128" style="width:52px"></td><td><input class="av" inputmode="decimal" placeholder="0" style="width:96px"></td><td><button class="trash" onclick="this.closest('tr').remove()">✕</button></td>`;b.appendChild(tr);}
 
 let sell = loadSell();
-function loadSell(){try{const s=localStorage.getItem('gold_sell_v4');if(s)return JSON.parse(s);}catch(e){}return DEFAULT_SELL.map(r=>({m:r[0],c:r[1],v:r[2],vc:r[3]||0,vl:r[4]||0}));}
+function loadSell(){let base;try{const s=localStorage.getItem('gold_sell_v4');if(s)base=JSON.parse(s);}catch(e){}if(!base)base=CATALOG_SELL();return mergeInto(base,CATALOG_SELL());}
 function saveSell(){
   const rows=[...document.querySelectorAll('#sellBody tr')].map(tr=>({m:tr.querySelector('.am').value.trim(),c:tr.querySelector('.ac').value.trim(),v:parseNum(tr.querySelector('.av').value),vc:parseNum(tr.querySelector('.avc').value),vl:parseNum(tr.querySelector('.avl').value)})).filter(r=>r.m);
   sell=rows;
@@ -363,7 +391,7 @@ function renderLineBudget(){const box=document.getElementById('lineBudget');if(!
 function orcarLinha(line){
   const mr={'64':0,'128':1,'256':2,'512':3,'1024':4,'1TB':4};
   const tiers=['','Pro','Pro Max'];const picked=[];
-  tiers.forEach(tv=>{const c=sell.filter(r=>{const p=parseModel(r.m);return p.line===line&&p.variant===tv&&r.v>0;}).sort((a,b)=>(mr[a.c]??9)-(mr[b.c]??9));if(c.length)picked.push({m:`${c[0].m} ${c[0].c}GB`,v:c[0].v});});
+  tiers.forEach(tv=>{const c=sell.filter(r=>{const p=parseModel(r.m);return p.line===line&&p.variant===tv&&r.v>0;}).sort((a,b)=>(mr[a.c]??9)-(mr[b.c]??9));if(c.length){const r=c[0];const novo=cond==='novo'&&r.vl;picked.push({m:`${r.m} ${r.c}GB`+(novo?' (Lacrado)':''),v:novo?r.vl:r.v});}});
   if(picked.length<2){alert('Linha '+line+': preciso de pelo menos 2 modelos com preço (normal/Pro/Pro Max).');return;}
   const box=document.getElementById('buyRows');box.innerHTML='';
   picked.slice(0,3).forEach(()=>box.insertAdjacentHTML('beforeend',buyRowHTML()));
@@ -567,12 +595,33 @@ function acpChecked(){const e=document.getElementById('incAcp');return !e||e.che
 function custNameVal(){const e=document.getElementById('custName');return e?e.value.trim():'';}
 function drawSub(x,W,y,txt,fs){fs=fs||34;x.font=`600 ${fs}px -apple-system,Segoe UI,Arial`;while(x.measureText(txt).width>W-110&&fs>22){fs-=2;x.font=`600 ${fs}px -apple-system,Segoe UI,Arial`;}x.fillStyle='#aab6cc';x.textAlign='center';x.fillText(txt,W/2,y);}
 function sealPill(x,px,py,txt){x.font='700 22px -apple-system,Segoe UI,Arial';const w=x.measureText(txt).width+36,h=44;x.fillStyle='rgba(245,197,24,0.13)';roundRect(x,px,py,w,h,h/2);x.fill();x.strokeStyle='rgba(245,197,24,0.5)';x.lineWidth=2;roundRect(x,px,py,w,h,h/2);x.stroke();x.fillStyle='#f5c518';x.textAlign='left';x.textBaseline='middle';x.fillText(txt,px+18,py+h/2);x.textBaseline='alphabetic';return w;}
-function drawSeals(x,W){if(!acpChecked())return;sealPill(x,30,24,'SEMINOVO PREMIUM');x.font='700 22px -apple-system,Segoe UI,Arial';const w=x.measureText('GARANTIA DE NOVO').width+36;sealPill(x,W-30-w,24,'GARANTIA DE NOVO');}
-function drawAcompanhaStrip(x,W,y){if(!acpChecked())return 0;x.textAlign='center';x.fillStyle='#8fa0bd';x.font='600 26px -apple-system,Segoe UI,Arial';x.fillText('Fonte G-Shield 5 anos  ·  Cabo original  ·  Película + capinha',W/2,y+30);x.fillStyle='#f5c518';x.font='700 27px -apple-system,Segoe UI,Arial';x.fillText('1 ano de garantia — garantia de novo, preço de seminovo',W/2,y+74);return 100;}
+function drawSeals(x,W){if(!acpChecked())return;const left=cond==='novo'?'NOVO · LACRADO':'SEMINOVO PREMIUM';const right=cond==='novo'?'GARANTIA APPLE':'GARANTIA DE NOVO';sealPill(x,30,24,left);x.font='700 22px -apple-system,Segoe UI,Arial';const w=x.measureText(right).width+36;sealPill(x,W-30-w,24,right);}
+function drawAcompanhaStrip(x,W,y){if(!acpChecked())return 0;x.textAlign='center';x.fillStyle='#8fa0bd';x.font='600 26px -apple-system,Segoe UI,Arial';
+  const l1=cond==='novo'?'Aparelho lacrado  ·  Nota fiscal  ·  Cabo + fonte originais':'Fonte G-Shield 5 anos  ·  Cabo original  ·  Película + capinha';
+  const l2=cond==='novo'?'1 ano de garantia Apple — zero, lacrado de fábrica':'1 ano de garantia — garantia de novo, preço de seminovo';
+  x.fillText(l1,W/2,y+30);x.fillStyle='#f5c518';x.font='700 27px -apple-system,Segoe UI,Arial';x.fillText(l2,W/2,y+74);return 100;}
 async function copyArt(ev){const b=ev&&ev.target;if(!artBlob){return;}try{await navigator.clipboard.write([new ClipboardItem({'image/png':artBlob})]);if(b){const o=b.textContent;b.textContent='✅ Copiada!';setTimeout(()=>b.textContent=o,1500);}}catch(e){downloadArt();}}
 function downloadArt(){if(!artBlob)return;const a=document.createElement('a');a.href=URL.createObjectURL(artBlob);a.download='gold-parcelamento.png';document.body.appendChild(a);a.click();a.remove();}
 
 /* ======== MENSAGEM ======== */
+let cond='semi'; /* 'semi' = seminovo | 'novo' = lacrado */
+function setCond(v){cond=v;
+  const s=document.getElementById('condSemi'),n=document.getElementById('condNovo');
+  if(s&&n){s.style.background=v==='semi'?'#e8b84a':'transparent';s.style.color=v==='semi'?'#1a1405':'var(--mut)';
+    n.style.background=v==='novo'?'#e8b84a':'transparent';n.style.color=v==='novo'?'#1a1405':'var(--mut)';}
+  repriceBuyRows();recalc();
+  const o=document.getElementById('out');if(o&&o.classList.contains('show'))generate();}
+function findSellRow(label){const base=(label||'').replace(/\s*\(Lacrado\)\s*$/i,'').trim();
+  const cm=base.match(/(\d+|1TB)\s*GB\s*$/i);if(!cm)return null;const cap=cm[1];
+  const name=base.replace(/\s*(\d+|1TB)\s*GB\s*$/i,'').trim().toLowerCase();
+  return sell.find(s=>s.m.trim().toLowerCase()===name&&String(s.c).toLowerCase()===String(cap).toLowerCase())||null;}
+function repriceBuyRows(){document.querySelectorAll('#buyRows .brow').forEach(row=>{
+  const mi=row.querySelector('.bm'),vi=row.querySelector('.bv');const label=mi.value.trim();if(!label)return;
+  const r=findSellRow(label);if(!r)return;const cur=parseNum(vi.value);
+  if(cur!==0&&cur!==r.v&&cur!==r.vl)return; /* preço editado na mão: não mexe */
+  const price=cond==='novo'?(r.vl||r.v):r.v;
+  mi.value=`${r.m} ${r.c}GB`+(cond==='novo'&&r.vl?' (Lacrado)':'');
+  vi.value=price>0?price:'';});}
 let cmpOn=false;
 function setCmp(v){cmpOn=v;const p=document.getElementById('segPedido'),c=document.getElementById('segCmp');if(!p||!c)return;
   p.style.background=v?'transparent':'#e8b84a';p.style.color=v?'var(--mut)':'#1a1405';
@@ -585,12 +634,13 @@ function generate(){
       const items=rows.map(r=>({m:r.m,v:r.v,net:hasTr?Math.max(0,r.v-tv):r.v}));
       const cust=document.getElementById('custName').value.trim();const saud=cust?`Olá, *${cust}*! `:'';
       let t=`*GOLD iPHONES* 🏆\n\n${saud}Comparativo pra te ajudar a decidir 👇\n\n`;
+      t+=cond==='novo'?`🆕 _Novos, lacrados — nota fiscal e garantia Apple_\n\n`:`♻️ _Seminovos premium — com garantia_\n\n`;
       if(hasTr)t+=`🔄 Dando seu *${trMs[0]}* na troca:\n\n`;
       items.forEach(it=>{t+=`📱 *${it.m}* — ${hasTr?'fica':'à vista'} *${brl(it.net)}*${hasTr?' de diferença':''}\n`;});
       if(items.length===2)t+=`\n↔️ Diferença entre eles: *${brl(Math.abs((items[1].v||0)-(items[0].v||0)))}*\n`;
       t+=`\n💳 *As parcelas de cada um na arte abaixo* 👇\n`;
       const pay=document.getElementById('payText').value.trim();if(pay)t+=`\n💳 _${pay}_\n`;
-      if(document.getElementById('incAcp').checked)t+=`\n✅ Todos com *1 ano de garantia* — garantia de novo, preço de seminovo. Acompanha fonte *G-Shield (5 anos)*, cabo original e película + capinha.\n`;
+      if(document.getElementById('incAcp').checked)t+=cond==='novo'?`\n✅ Todos *novos, lacrados* — nota fiscal e *1 ano de garantia Apple*. Cabo e fonte originais na caixa.\n`:`\n✅ Todos com *1 ano de garantia* — garantia de novo, preço de seminovo. Acompanha fonte *G-Shield (5 anos)*, cabo original e película + capinha.\n`;
       t+=`\nQual fica melhor pra você? 😉`;
       document.getElementById('outText').textContent=t;
       document.getElementById('out').classList.add('show');
@@ -613,6 +663,7 @@ function generate(){
   if(hasTrade)t+=`${saud}Mandou muito bem no seu *${trMs[0]}*! 🙌\n\nSegue o seu orçamento 👇\n\n`;
   else t+=`${saud}Segue o seu orçamento 👇\n\n`;
   if(models.length){models.forEach(m=>t+=`📱 *${m}*\n`);}else{t+=`📱 *—*\n`;}
+  t+=cond==='novo'?`🆕 _Novo, lacrado — nota fiscal e garantia Apple_\n`:`♻️ _Seminovo premium — com garantia_\n`;
   if(hasTrade){
     if(trMs.length===1)t+=`🔄 Dando seu *${trMs[0]}* na troca:\n`;
     else t+=`🔄 Dando na troca: *${trMs.join(' + ')}*\n`;
@@ -699,6 +750,7 @@ function parseAudio(){
   if(splitIdx>-1){segNew=t.slice(0,splitIdx);segTr=t.slice(splitIdx);}
   const mNew=grabModel(segNew)||grabModel(t);const mTr=segTr?grabModel(segTr):'';
   const lac=/(lacrad|selad|nunca aberto|na caixa)/.test(t)||(/\bnovo\b/.test(t)&&!/semi/.test(t));
+  if(lac)setCond('novo');
   if(mNew){if(!pickBestSell(mNew,lac)){const fb=document.querySelector('#buyRows .bm');if(fb)fb.value=mNew;}}
   if(price){const fv=document.querySelector('#buyRows .bv');if(fv)fv.value=price;}
   if(mTr){const f=document.querySelector('#tradeRows .trm');if(f){f.value=mTr;const av=avalLookup(mTr);if(av>0)f.closest('.trow').querySelector('.trv').value=av;}}
@@ -734,10 +786,10 @@ function saveNao(){try{localStorage.setItem('gold_nao_v1',document.getElementByI
 })();
 
 const SEL={buy:{line:null,variant:null},trade:{line:null,variant:null}};
-function parseModel(m){const s=m.replace(/iPhone\s*/i,'').trim();const lm=s.match(/^(\d{2}e?)/);const line=lm?lm[1]:'';const variant=s.slice(line.length).trim();return {line,variant};}
-function modelsFor(section){const data=section==='buy'?sell:aval;return data.map(r=>{const p=parseModel(r.m);return {line:p.line,variant:p.variant,c:r.c,m:r.m,v:r.v};});}
+function parseModel(m){const s=m.replace(/iPhone\s*/i,'').trim();const lm=s.match(/^(SE\s*\d{4}|SE|XS|XR|X|\d{1,2}e?)/i);const line=lm?lm[1]:'';const variant=s.slice(line.length).trim();return {line,variant};}
+function modelsFor(section){const data=section==='buy'?sell:aval;return data.map(r=>{const p=parseModel(r.m);return {line:p.line,variant:p.variant,c:r.c,m:r.m,v:r.v,vl:r.vl||0};});}
 function fillPicked(section,label,price){const sel=section==='buy'?'#buyRows .bm':'#tradeRows .trm';const inputs=[...document.querySelectorAll(sel)];let target=null;if(section==='buy'&&activeBuy&&document.body.contains(activeBuy)){target=activeBuy.querySelector('.bm');}if(!target)target=inputs.find(i=>!i.value.trim())||inputs[inputs.length-1];if(!target)return;target.value=label;const row=target.closest(section==='buy'?'.brow':'.trow');const vi=row.querySelector(section==='buy'?'.bv':'.trv');if(vi)vi.value=price>0?price:'';recalc();}
-function pickChip(section,level,val){const st=SEL[section];if(level==='line'){st.line=val;st.variant=null;}else if(level==='variant'){st.variant=val;}else if(level==='mem'){const d=modelsFor(section).find(x=>x.line===st.line&&x.variant===st.variant&&x.c===val);if(d)fillPicked(section,`${d.m} ${d.c}GB`,d.v);st.line=null;st.variant=null;}renderPicker(section);}
+function pickChip(section,level,val){const st=SEL[section];if(level==='line'){st.line=val;st.variant=null;}else if(level==='variant'){st.variant=val;}else if(level==='mem'){const d=modelsFor(section).find(x=>x.line===st.line&&x.variant===st.variant&&x.c===val);if(d){const novo=section==='buy'&&cond==='novo'&&d.vl;fillPicked(section,`${d.m} ${d.c}GB`+(novo?' (Lacrado)':''),novo?d.vl:d.v);}st.line=null;st.variant=null;}renderPicker(section);}
 function renderPicker(section){
   const box=document.getElementById(section==='buy'?'buyChips':'tradeChips');if(!box)return;
   const data=modelsFor(section);const st=SEL[section];
