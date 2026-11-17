@@ -193,7 +193,7 @@
         <button type="button" id="condSemi" onclick="setCond('semi')" style="flex:1;padding:11px;border-radius:11px;border:1px solid var(--line);background:#e8b84a;color:#1a1405;font-weight:700;cursor:pointer">♻️ Seminovo</button>
         <button type="button" id="condNovo" onclick="setCond('novo')" style="flex:1;padding:11px;border-radius:11px;border:1px solid var(--line);background:transparent;color:var(--mut);font-weight:700;cursor:pointer">🆕 Novo (lacrado)</button>
       </div>
-      <div class="small" style="margin-bottom:6px">⚡ Orçar a linha inteira (normal · Pro · Pro Max) — abate a troca em cada:</div>
+      <div class="small" style="margin-bottom:6px">🚀 Lançar a linha inteira — tabela de todos os modelos com preço + parcelamento (pra auditar/postar):</div>
       <div class="chiprow" id="lineBudget"></div>
       <div class="chiprow" id="buyChips"></div>
       <div id="buyRows"></div>
@@ -392,15 +392,26 @@ function buyModels(){return [...document.querySelectorAll('#buyRows .bm')].map(i
 function buyRowsData(){return [...document.querySelectorAll('#buyRows .brow')].map(r=>({m:r.querySelector('.bm').value.trim(),v:parseNum(r.querySelector('.bv').value)})).filter(r=>r.m);}
 function renderLineBudget(){const box=document.getElementById('lineBudget');if(!box)return;const lines=[...new Set(sell.map(r=>parseModel(r.m).line))].filter(Boolean).sort((a,b)=>parseInt(a)-parseInt(b)||a.length-b.length);box.innerHTML=lines.map(l=>`<button class="chip" onclick="orcarLinha('${l}')">Linha ${l}</button>`).join('');}
 function orcarLinha(line){
+  const order={'':0,'e':0.5,'Plus':1,'Air':1.5,'Pro':2,'Pro Max':3};
   const mr={'64':0,'128':1,'256':2,'512':3,'1024':4,'1TB':4};
-  const tiers=['','Pro','Pro Max'];const picked=[];
-  tiers.forEach(tv=>{const c=sell.filter(r=>{const p=parseModel(r.m);return p.line===line&&p.variant===tv&&r.v>0;}).sort((a,b)=>(mr[a.c]??9)-(mr[b.c]??9));if(c.length){const r=c[0];const novo=cond==='novo'&&r.vl;picked.push({m:`${r.m} ${r.c}GB`+(novo?' (Lacrado)':''),v:novo?r.vl:r.v});}});
-  if(picked.length<2){alert('Linha '+line+': preciso de pelo menos 2 modelos com preço (normal/Pro/Pro Max).');return;}
-  const box=document.getElementById('buyRows');box.innerHTML='';
-  picked.slice(0,3).forEach(()=>box.insertAdjacentHTML('beforeend',buyRowHTML()));
-  const rows=document.querySelectorAll('#buyRows .brow');
-  picked.slice(0,3).forEach((p,i)=>{rows[i].querySelector('.bm').value=p.m;rows[i].querySelector('.bv').value=p.v;});
-  setCmp(true);activeBuy=null;recalc();generate();
+  const items=sell.filter(r=>parseModel(r.m).line===line)
+    .map(r=>{const p=parseModel(r.m);const novo=cond==='novo'&&r.vl;return {variant:p.variant,c:r.c,v:novo?r.vl:r.v};})
+    .filter(r=>r.v>0)
+    .sort((a,b)=>(order[a.variant]??9)-(order[b.variant]??9)||(mr[a.c]??9)-(mr[b.c]??9));
+  if(!items.length){alert('Linha '+line+': nenhum modelo com preço preenchido. Preenche na aba Preços primeiro'+(cond==='novo'?' (coluna Lacrado).':'.'));return;}
+  const rate=n=>(PARC.find(x=>x[0]===n)||[n,0])[1];
+  const par=(v,n)=>v*(1+rate(n)/100)/n;
+  const condTag=cond==='novo'?'🆕 Novos, lacrados — 2 anos de garantia':'♻️ Seminovos premium — 1 ano de garantia';
+  let t=`*GOLD iPHONES* 🏆\n*Tabela — iPhone ${line}*\n${condTag}\n\n`;
+  items.forEach(it=>{const cap=it.c==='1TB'?'1TB':it.c+'GB';const name=`iPhone ${line}${it.variant?' '+it.variant:''} ${cap}`.replace(/\s+/g,' ').trim();
+    t+=`📱 *${name}*\n💰 À vista *${brl(it.v)}*  ·  12x *${brl(par(it.v,12))}*  ·  18x *${brl(par(it.v,18))}*\n\n`;});
+  const pay=document.getElementById('payText').value.trim();
+  t+=`✅ ${cond==='novo'?'Nota fiscal · lacrado de fábrica · 2 anos de garantia':'Revisados · 1 ano de garantia · acompanha fonte G-Shield (5 anos)'}\n`;
+  t+=`💳 ${pay||'Pix · cartão em até 18x · dinheiro'}\n\nQual te atende melhor? 😉`;
+  clearArt();cmpOn=false;
+  document.getElementById('outText').textContent=t;
+  document.getElementById('out').classList.add('show');
+  document.getElementById('out').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function buyTotal(){let s=0;document.querySelectorAll('#buyRows .bv').forEach(i=>s+=parseNum(i.value));return s;}
 function searchBuy(inp){
