@@ -216,11 +216,11 @@
       <div class="calc diff" style="margin-top:8px"><span class="lbl" id="diffLbl">Total a pagar</span><span class="val" id="sumDiff">R$ 0,00</span></div>
       <div class="mb" style="margin-top:14px">
         <label>Formas de pagamento</label>
-        <input id="payText" value="Pix, cartão em até 18x ou dinheiro">
+        <input id="payText" value="Pix, cartão em até 18x ou dinheiro" oninput="autoGen()">
       </div>
       <div>
         <label>Nome do cliente (opcional)</label>
-        <input id="custName" placeholder="—">
+        <input id="custName" placeholder="—" oninput="autoGen()">
       </div>
       <div style="margin:4px 0 10px">
         <div class="small" style="margin-bottom:6px">Os 2 aparelhos são:</div>
@@ -229,10 +229,10 @@
           <button type="button" id="segCmp" onclick="setCmp(true)" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--mut);font-weight:700;cursor:pointer">⚖️ Comparar 2</button>
         </div>
       </div>
-      <label class="chk"><input type="checkbox" id="incParc" checked> Incluir simulação do cartão (parcelamento)</label>
-      <label class="chk"><input type="checkbox" id="incAcp" checked> Incluir o que ACOMPANHA (o que vem)</label>
+      <label class="chk"><input type="checkbox" id="incParc" checked onchange="autoGen()"> Incluir simulação do cartão (parcelamento)</label>
+      <label class="chk"><input type="checkbox" id="incAcp" checked onchange="autoGen()"> Incluir o que ACOMPANHA (o que vem)</label>
       <div class="mb" style="margin-top:6px">
-        <textarea id="acpText" rows="7" onchange="saveAcp()" style="resize:vertical"></textarea>
+        <textarea id="acpText" rows="7" onchange="saveAcp();autoGen()" style="resize:vertical"></textarea>
       </div>
       <label class="chk"><input type="checkbox" id="incNao"> Incluir o que NÃO vem</label>
       <div class="mb" style="margin-top:6px">
@@ -240,7 +240,7 @@
       </div>
     </div>
 
-    <button class="btn btn-gold" id="genBtn" onclick="generate()">✨ Gerar mensagem</button>
+    <div id="genBtn" class="small" style="text-align:center;margin-top:2px;padding:12px;background:var(--panel2);border:1px solid var(--line);border-radius:12px">✨ A mensagem e a arte se atualizam <b>sozinhas</b> conforme você seleciona os modelos 👆</div>
 
     <div class="out" id="out">
       <pre id="outText"></pre>
@@ -411,7 +411,7 @@ function orcarLinha(line){
   clearArt();cmpOn=false;
   document.getElementById('outText').textContent=t;
   document.getElementById('out').classList.add('show');
-  document.getElementById('out').scrollIntoView({behavior:'smooth',block:'nearest'});
+  if(!window._autogen)document.getElementById('out').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function buyTotal(){let s=0;document.querySelectorAll('#buyRows .bv').forEach(i=>s+=parseNum(i.value));return s;}
 function searchBuy(inp){
@@ -473,7 +473,7 @@ function recalc(){
     if(tv>0){rowT.style.display='flex';document.getElementById('sumTrade').textContent=brl(tv);lbl.textContent='Diferença (cada modelo)';}
     else{rowT.style.display='none';lbl.textContent='Valor (cada modelo)';}
     document.getElementById('sumDiff').textContent=`${brl(dmn)} – ${brl(dmx)}`;
-    return;
+    autoGen();return;
   }
   const np=buyTotal();const diff=np-tv;
   if(newLbl)newLbl.textContent='Preço de venda';
@@ -481,7 +481,12 @@ function recalc(){
   if(tv>0){rowT.style.display='flex';document.getElementById('sumTrade').textContent=brl(tv);lbl.textContent=diff>=0?'Diferença a pagar':'↩️ Devolvemos no Pix';}
   else{rowT.style.display='none';lbl.textContent='Total a pagar';}
   document.getElementById('sumDiff').textContent=brl(Math.abs(diff));
+  autoGen();
 }
+function autoGen(){clearTimeout(window._ag);window._ag=setTimeout(()=>{
+  const has=[...document.querySelectorAll('#buyRows .bm')].some(i=>i.value.trim());
+  if(has){window._autogen=true;try{generate();}catch(e){}window._autogen=false;}
+},380);}
 
 /* ======== PARCELAMENTO (10 simulações) ======== */
 function parcLines(valor){
@@ -678,7 +683,7 @@ function generate(){
       document.getElementById('outText').textContent=t;
       document.getElementById('out').classList.add('show');
       buildCompareArt(items, hasTr?trMs[0]:'', hasTr);
-      document.getElementById('out').scrollIntoView({behavior:'smooth',block:'nearest'});
+      if(!window._autogen)document.getElementById('out').scrollIntoView({behavior:'smooth',block:'nearest'});
       return;
     }
   }
@@ -719,7 +724,7 @@ function generate(){
 
   document.getElementById('outText').textContent=t;
   document.getElementById('out').classList.add('show');
-  document.getElementById('out').scrollIntoView({behavior:'smooth',block:'nearest'});
+  if(!window._autogen)document.getElementById('out').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function copyMsg(){
   const t=document.getElementById('outText').textContent;const b=event.target;
